@@ -1,0 +1,9 @@
+.pyenv/
+build/
+__pycache__/
+PKG-INFO
+SOURCES.txt
+dependency_links.txt
+top_level.txt
+requires.txt
+entry_points.txt
