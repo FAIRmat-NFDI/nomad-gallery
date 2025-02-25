@@ -32,6 +32,7 @@ theme:
   favicon: assets/favicon.png
   features:
     - navigation.instant
+    - content.tabs.link
   custom_dir: docs/theme
   icon:
     repo: fontawesome/brands/github
@@ -45,11 +46,12 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
   - toc:
       permalink: True
   - pymdownx.arithmatex:
       generic: true
-  - attr_list
   - mkdocs-click
   - pymdownx.extra
 extra:
