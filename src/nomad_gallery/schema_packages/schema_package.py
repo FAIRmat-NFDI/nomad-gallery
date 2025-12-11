@@ -10,14 +10,13 @@ if TYPE_CHECKING:
         BoundLogger,
     )
 
-from nomad.config import config
 from nomad.datamodel.data import Schema
 from nomad.datamodel.metainfo.annotations import ELNAnnotation, ELNComponentEnum
 from nomad.metainfo import MEnum, Quantity, SchemaPackage
 
-configuration = config.get_plugin_entry_point(
-    'nomad_gallery.schema_packages:schema_package_entry_point'
-)
+# configuration = config.get_plugin_entry_point(
+#    'nomad_gallery.schema_packages:schema_package_entry_point'
+# )
 
 m_package = SchemaPackage()
 
