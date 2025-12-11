@@ -1,4 +1,5 @@
 import os.path
+
 from nomad.client import normalize_all, parse
 
 
