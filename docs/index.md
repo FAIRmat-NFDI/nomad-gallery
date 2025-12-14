@@ -15,10 +15,10 @@ FUNCTIONALITY ADDED IN MKDOCS VERSION 9.5.0-->
 
 <!-- # Include a single card manually -->
 
-{{ render_card_from_file("special_cards/Alexandria.md") }}
+{{ render_card_from_file_macro("special_cards/Alexandria.md") }}
 
 ## Gallery
 
 <!-- # Find all cards in cards/ and sort by date (newest first) -->
 
-{{ render_sorted_cards() }}
+{{ render_sorted_cards_macro() }}

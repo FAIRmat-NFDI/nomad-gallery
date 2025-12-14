@@ -1,3 +1,7 @@
 data:
-  m_def: nomad_gallery.schema_packages.schema_package.NewSchemaPackage
-  name: Markus
+  m_def: nomad_gallery.schema_packages.schema_package.GalleryEntry
+  name: "Test Gallery Entry"
+  research_field: "Battery Science"
+  description: "A test description."
+  institution: "Test Institute"
+  methodology_type: "Computational"
