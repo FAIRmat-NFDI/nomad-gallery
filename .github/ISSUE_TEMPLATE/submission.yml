@@ -1,0 +1,130 @@
+name: Submission
+description: Create a new submission from template.
+title: "[Submission]: "
+labels: ["submission"]
+# assignees: ["JFRudzinski"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for your interest in contributing! Please fill out the details below.
+
+  # 1. Basic Info & Research Field
+  - type: input
+    id: name
+    attributes:
+      label: Name
+      placeholder: "e.g. The Alexandria Database hosted by the NOMAD Calculations App"
+    validations:
+      required: true
+
+    # TODO: probably need an "internal" used to save the asset (card/markdown)
+
+  - type: input
+    id: research_field
+    attributes:
+      label: Research Field
+      placeholder: "e.g., Battery Science"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Short description of the data, feature, or tool.
+    validations:
+      required: true
+
+  # 2. Affiliation / Institution
+  - type: input
+    id: institution
+    attributes:
+      label: Institution
+    validations:
+      required: true
+
+  - type: input
+    id: country
+    attributes:
+      label: Country Code
+      placeholder: "e.g., DE, US, FR"
+    validations:
+      required: true
+
+  # 3. Authors (Coauthors)
+  - type: textarea
+    id: coauthors
+    attributes:
+      label: Co-authors
+      description: Please list co-authors (one per line).
+
+  # 4. Methodology
+  - type: dropdown
+    id: methodology_type
+    attributes:
+      label: Methodology Type
+      options:
+        - Computational
+        - Experimental
+        - Mixed/Hybrid
+    validations:
+      required: true
+
+  - type: input
+    id: technique
+    attributes:
+      label: Specific Technique
+      placeholder: "e.g., DFT, XPS"
+
+  # 5. Data Metadata
+  - type: input
+    id: data_size
+    attributes:
+      label: Data Size (Optional)
+      placeholder: "e.g., 50 GB"
+
+  - type: textarea
+    id: keywords
+    attributes:
+      label: Keywords
+      description: Add keywords (one per line).
+
+  # 6. Publications & Funding
+  - type: input
+    id: publication_reference
+    attributes:
+      label: Publication Reference
+      description: DOI or link.
+
+  - type: input
+    id: funding_reference
+    attributes:
+      label: Funding Reference
+      description: Grant number or agency.
+
+  # 7. Metrics (Optional)
+  - type: input
+    id: estimated_active_users
+    attributes:
+      label: Estimated Active Users (Optional)
+
+  - type: input
+    id: downloads
+    attributes:
+      label: Downloads (Optional)
+
+  # 8. Media
+  - type: input
+    id: media_url
+    attributes:
+      label: Media URL (Optional)
+      description: Link to a video or GIF.
+
+  - type: textarea
+    id: screenshot_url
+    attributes:
+      label: Screenshot
+      description: Drag and drop your image here to generate a link.
+    validations:
+      required: true
