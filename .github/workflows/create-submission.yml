@@ -1,0 +1,94 @@
+name: Process Approved Submission to Create Cards
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  create-card:
+    if: github.event.label.name == 'submission-approved'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write # Needed to comment on the issue later (if desired)
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Parse Issue
+        uses: stefanbuck/github-issue-parser@v3
+        id: issue-parser
+        with:
+          template-path: .github/ISSUE_TEMPLATE/submission.yml
+
+      - name: Sanitize and Check Shortname
+        id: check-name
+        run: |
+          # Grab shortname, make it lowercase, and replace spaces/weird chars with underscores
+          RAW_SHORTNAME="${{ steps.issue-parser.outputs.issueparser_shortname }}"
+          SHORTNAME=$(echo "$RAW_SHORTNAME" | tr '[:upper:]' '[:lower:]' | sed -e 's/ /_/g' -e 's/[^a-z0-9_]//g')
+
+          echo "Sanitized shortname: $SHORTNAME"
+
+          # Duplicate check
+          if [ -f "docs/cards/${SHORTNAME}.md" ]; then
+            echo "::error::A submission card for '${SHORTNAME}' already exists!"
+            exit 1
+          fi
+
+          # Pass the sanitized name to subsequent steps
+          echo "SHORTNAME=$SHORTNAME" >> $GITHUB_ENV
+
+      - name: Extract and Download Screenshot
+        run: |
+          # The screenshot field will contain markdown like: ![image](https://github.com/user-attachments/...)
+          SCREENSHOT_MD="${{ steps.issue-parser.outputs.issueparser_screenshot_url }}"
+
+          # Use grep to pull out the first http/https URL
+          IMAGE_URL=$(echo "$SCREENSHOT_MD" | grep -Eo '(http|https)://[^)"]+' | head -n 1)
+
+          mkdir -p docs/assets
+
+          if [ -n "$IMAGE_URL" ]; then
+            echo "Downloading image from $IMAGE_URL"
+            curl -sL "$IMAGE_URL" -o "docs/assets/${SHORTNAME}_screenshot.png"
+            echo "IMAGE_PATH=../assets/${SHORTNAME}_screenshot.png" >> $GITHUB_ENV
+          else
+            echo "No valid image URL found."
+            echo "IMAGE_PATH=" >> $GITHUB_ENV
+          fi
+
+      - name: Generate Markdown Card
+        env:
+          TITLE: ${{ steps.issue-parser.outputs.issueparser_name }}
+          RESEARCH_FIELD: ${{ steps.issue-parser.outputs.issueparser_research_field }}
+          INSTITUTION: ${{ steps.issue-parser.outputs.issueparser_institution }}
+          DESC: ${{ steps.issue-parser.outputs.issueparser_description }}
+        run: |
+          mkdir -p docs/cards
+          DATE=$(date +%Y-%m-%d)
+
+          cat <<EOF > "docs/cards/${SHORTNAME}.md"
+          ---
+          title: "$TITLE"
+          shortname: "$SHORTNAME"
+          research_field: "$RESEARCH_FIELD"
+          institution: "$INSTITUTION"
+          submission_date: "$DATE"
+          ---
+
+          # $TITLE
+
+          $DESC
+
+          ![Screenshot]($IMAGE_PATH)
+
+          ## Details
+          - **Co-authors:** ${{ steps.issue-parser.outputs.issueparser_coauthors }}
+          - **Keywords:** ${{ steps.issue-parser.outputs.issueparser_keywords }}
+          EOF
+
+      - name: Commit and Push
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "feat: add submission card for ${{ env.SHORTNAME }}"
+          file_pattern: "docs/cards/*.md docs/assets/*"

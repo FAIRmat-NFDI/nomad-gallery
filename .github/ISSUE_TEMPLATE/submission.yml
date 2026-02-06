@@ -18,7 +18,14 @@ body:
     validations:
       required: true
 
-    # TODO: probably need an "internal" used to save the asset (card/markdown)
+  # Shorter name for internal asset storage
+  - type: input
+    id: shortname
+    attributes:
+      label: Name
+      placeholder: "alex_database"
+    validations:
+      required: true
 
   - type: input
     id: research_field
