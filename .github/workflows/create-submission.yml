@@ -1,0 +1,46 @@
+name: Process Approved Submission to Create Cards
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  create-card:
+    if: github.event.label.name == 'submission-approved'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Parse Issue
+        uses: stefanbuck/github-issue-parser@v3
+        id: issue-parser
+        with:
+          template-path: .github/ISSUE_TEMPLATE/submission.yml
+
+      # TODO:
+      # - name: Download and Save Image
+      #   run: |
+      #     #
+
+      - name: Generate Markdown Card
+        run: |
+          DATE=$(date +%Y-%m-%d)
+
+          cat <<EOF > docs/cards/${{ env.FINAL_FILENAME }}
+          ---
+          title: ${{ steps.issue-parser.outputs.issueanswer_name }}
+          submitter: ${{ steps.issue-parser.outputs.issueanswer_submitter_name }}
+          description: ${{ steps.issue-parser.outputs.issueanswer_description }}
+          submission_date: $DATE
+          ---
+
+          ${{ steps.issue-parser.outputs.issueanswer_description }}
+          EOF
+
+      - name: Commit and Push
+        uses: stefan-strle/git-auto-commit-action@v7
+        with:
+          commit_message: "Add submission card: ${{ steps.issue-parser.outputs.issueanswer_name }}"
+          file_pattern: 'docs/cards/*.md docs/assets/*'
