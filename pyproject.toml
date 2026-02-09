@@ -39,7 +39,7 @@ dependencies = [
 [project.urls]
 Repository = "https://github.com/FAIRmat-NFDI/nomad-gallery"
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = ["ruff", "pytest", "structlog"]
 
 [tool.ruff]
