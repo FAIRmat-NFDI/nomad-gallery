@@ -18,8 +18,6 @@ nav:
   # - Reference: reference/references.md
 plugins:
   - search
-  - include-markdown:
-      include_dir: docs
   - macros
 theme:
   name: material
