@@ -4,7 +4,7 @@ title: NOMAD Gallery | Explore
 
 ![NOMAD Gallery logo](assets/logo.png){ width=520 }
 
-<h2> Explore the NOMAD Gallery </h2>
+<h2> 🔍 Explore the NOMAD Gallery </h2>
 
 Browse community-submitted use cases showing how NOMAD is used in real research workflows.
 Use the filters below to explore by methodology, research field, or keywords.

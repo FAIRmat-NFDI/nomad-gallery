@@ -123,9 +123,6 @@ def _build_metrics_and_refs(info):
         badges = " ".join([f'<span class="kw-badge">{esc(k)}</span>' for k in info["keywords"]])
         blocks.append(f'<div class="card-keywords"><strong>Keywords</strong>: {badges}</div>')
 
-    submitted = esc(info.get("submission_date", "") or "")
-    blocks.append(f'<div class="card-submitted">Submitted: {submitted}</div>')
-
     return f'<div class="card-metrics">{"".join(blocks)}</div>'
 
 
@@ -144,23 +141,47 @@ def _build_media_and_links(info):
             f"</div>"
         )
 
-    # Links
+    # Icon-based Links
     link_items = []
     if info.get("repo_link"):
         link_items.append(
-            f'<div><strong>Repo</strong>: <a href="{esc(info["repo_link"])}">{esc(info.get("repo_name") or info["repo_link"])}</a></div>'
+            f'<a href="{esc(info["repo_link"])}" class="icon-link" '
+            f'aria-label="View Repository" target="_blank" rel="noopener">'
+            f'<svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>'
+            f'</a>'
         )
     if info.get("entry_link"):
         link_items.append(
-            f'<div><strong>Launch</strong>: <a href="{esc(info["entry_link"])}">{esc(info.get("entry_name") or info["entry_link"])}</a></div>'
+            f'<a href="{esc(info["entry_link"])}" class="icon-link" '
+            f'aria-label="Open in NOMAD" target="_blank" rel="noopener">'
+            f'<img src="assets/nomad-icon.png" alt="NOMAD" onerror="this.parentElement.innerHTML=\'<span class=&quot;emoji-icon&quot;>🚀</span>\'" />'
+            f'</a>'
         )
     if info.get("media_url"):
         link_items.append(
-            f'<div><strong>Media/Video</strong>: <a href="{esc(info["media_url"])}">Watch Demo</a></div>'
+            f'<a href="{esc(info["media_url"])}" class="icon-link" '
+            f'aria-label="Watch Media" target="_blank" rel="noopener">'
+            f'<span class="emoji-icon">🎥</span>'
+            f'</a>'
+        )
+    if info.get("publication"):
+        link_items.append(
+            f'<a href="{esc(info["publication"])}" class="icon-link" '
+            f'aria-label="View Publication" target="_blank" rel="noopener">'
+            f'<span class="emoji-icon">📄</span>'
+            f'</a>'
         )
 
-    if link_items:
-        parts.append('<div class="card-links">' + "".join(link_items) + "</div>")
+    # Create footer with icons and date
+    if link_items or info.get("submission_date"):
+        footer_html = '<div class="card-icon-links">'
+        if link_items:
+            footer_html += '<div class="card-icons-group">' + "".join(link_items) + '</div>'
+        if info.get("submission_date"):
+            submitted = esc(info.get("submission_date", "") or "")
+            footer_html += f'<div class="card-submitted-inline">Submitted: {submitted}</div>'
+        footer_html += '</div>'
+        parts.append(footer_html)
 
     return parts
 
