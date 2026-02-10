@@ -1,4 +1,5 @@
 .pyenv/
+.venv/
 build/
 __pycache__/
 PKG-INFO

@@ -1,217 +1,241 @@
 import os
 from datetime import datetime
-
+from pathlib import Path
+import html
 import yaml
+
+
+def esc(x):
+    """HTML-escape any value safely."""
+    return html.escape("" if x is None else str(x), quote=True)
 
 
 def extract_metadata(data):
     """Extracts and cleans all fields from the YAML data."""
     # Handle lists (Coauthors, Keywords)
-    coauthors = data.get('coauthors', [])
+    coauthors = data.get("coauthors", [])
     if isinstance(coauthors, str):
-        coauthors = [c.strip() for c in coauthors.split(',')]
+        coauthors = [c.strip() for c in coauthors.split(",") if c.strip()]
 
-    keywords = data.get('keywords', [])
+    keywords = data.get("keywords", [])
     if isinstance(keywords, str):
-        keywords = [k.strip() for k in keywords.split(',')]
+        keywords = [k.strip() for k in keywords.split(",") if k.strip()]
 
     # Handle Images
-    image_path = data.get('image_path', '').strip()
-    if 'github.com' in image_path:
-        image_path = image_path.replace(
-            'github.com', 'raw.githubusercontent.com'
-        ).replace('/blob/', '/')
+    image_path = (data.get("image_path", "") or "").strip()
+    if "github.com" in image_path:
+        image_path = image_path.replace("github.com", "raw.githubusercontent.com").replace(
+            "/blob/", "/"
+        )
 
     # Handle Links with Fallbacks
-    repo_link = data.get('repo_link', '').strip()
-    repo_name = data.get('repo_name', '').strip() or repo_link
-    entry_link = data.get('entry_link', '').strip()
-    entry_name = data.get('entry_name', '').strip() or entry_link
+    repo_link = (data.get("repo_link", "") or "").strip()
+    repo_name = (data.get("repo_name", "") or "").strip() or repo_link
+    entry_link = (data.get("entry_link", "") or "").strip()
+    entry_name = (data.get("entry_name", "") or "").strip() or entry_link
 
     return {
-        'title': data.get('title', 'Untitled Submission'),
-        'submitter': data.get('submitter', 'Unknown Submitter'),
-        'description': data.get('description', 'No description available.'),
-        'submission_date': data.get('submission_date', 'Unknown date'),
-        'institution': data.get('institution', '').strip(),
-        'country': data.get('country', '').strip(),
-        'research_field': data.get('research_field', '').strip(),
-        'methodology': data.get('methodology_type', '').strip(),
-        'technique': data.get('technique', '').strip(),
-        'data_size': data.get('data_size', '').strip(),
-        'active_users': data.get('estimated_active_users', None),
-        'downloads': data.get('downloads', None),
-        'media_url': data.get('media_url', '').strip(),
-        'coauthors': coauthors,
-        'keywords': keywords,
-        'publication': data.get('publication_reference', '').strip(),
-        'funding': data.get('funding_reference', '').strip(),
-        'image_name': data.get('image_name', 'Image'),
-        'image_path': image_path,
-        'repo_link': repo_link,
-        'repo_name': repo_name,
-        'entry_link': entry_link,
-        'entry_name': entry_name,
+        "title": data.get("title", "Untitled Submission"),
+        "submitter": data.get("submitter", "Unknown Submitter"),
+        "description": data.get("description", "No description available."),
+        "submission_date": data.get("submission_date", "Unknown date"),
+        "institution": (data.get("institution", "") or "").strip(),
+        "country": (data.get("country", "") or "").strip(),
+        "research_field": (data.get("research_field", "") or "").strip(),
+        "methodology": (data.get("methodology_type", "") or "").strip(),
+        "technique": (data.get("technique", "") or "").strip(),
+        "data_size": (data.get("data_size", "") or "").strip(),
+        "active_users": data.get("estimated_active_users", None),
+        "downloads": data.get("downloads", None),
+        "media_url": (data.get("media_url", "") or "").strip(),
+        "coauthors": coauthors,
+        "keywords": keywords,
+        "publication": (data.get("publication_reference", "") or "").strip(),
+        "funding": (data.get("funding_reference", "") or "").strip(),
+        "image_name": data.get("image_name", "Image"),
+        "image_path": image_path,
+        "repo_link": repo_link,
+        "repo_name": repo_name,
+        "entry_link": entry_link,
+        "entry_name": entry_name,
     }
 
 
 def _build_header(info):
-    html = [f'## {info["title"]}\n']
-    meta = []
-    if info['research_field']:
-        meta.append(f'**Field**: {info["research_field"]}')
-    if info['institution']:
-        meta.append(f'**Inst**: {info["institution"]}')
-    if info['country']:
-        meta.append(f'({info["country"]})')
+    title = esc(info.get("title", "Untitled Submission"))
+    description = esc(info.get("description", "No description available."))
 
-    if meta:
-        html.append(f'{", ".join(meta)}  \n')
+    meta_parts = []
+    if info.get("research_field"):
+        meta_parts.append(f"<strong>Field</strong>: {esc(info['research_field'])}")
+    if info.get("institution"):
+        meta_parts.append(f"<strong>Inst</strong>: {esc(info['institution'])}")
+    if info.get("country"):
+        meta_parts.append(f"({esc(info['country'])})")
 
-    html.append(f'\n{info["description"]}\n<br>\n')
-    return html
+    meta_line = f'<div class="card-meta">{" , ".join(meta_parts)}</div>' if meta_parts else ""
+
+    return (
+        f'<h3 class="card-title">{title}</h3>'
+        f"{meta_line}"
+        f'<p class="card-description">{description}</p>'
+    )
 
 
 def _build_details(info):
-    html = []
-    html.append(f'**Submitter**: {info["submitter"]}  \n')
+    rows = []
+    rows.append(f"<div><strong>Submitter</strong>: {esc(info.get('submitter', 'Unknown Submitter'))}</div>")
 
-    if info['coauthors']:
-        html.append(f'**Coauthors**: {", ".join(info["coauthors"])}  \n')
-    if info['methodology']:
-        html.append(f'**Methodology**: {info["methodology"]}  \n')
-    if info['technique']:
-        html.append(f'**Technique**: {info["technique"]}  \n')
-    if info['data_size']:
-        html.append(f'**Data Size**: {info["data_size"]}  \n')
-    return html
+    if info.get("coauthors"):
+        rows.append(f"<div><strong>Coauthors</strong>: {esc(', '.join(info['coauthors']))}</div>")
+    if info.get("methodology"):
+        rows.append(f"<div><strong>Methodology</strong>: {esc(info['methodology'])}</div>")
+    if info.get("technique"):
+        rows.append(f"<div><strong>Technique</strong>: {esc(info['technique'])}</div>")
+    if info.get("data_size"):
+        rows.append(f"<div><strong>Data Size</strong>: {esc(info['data_size'])}</div>")
+
+    return f'<div class="card-details">{"".join(rows)}</div>'
 
 
 def _build_metrics_and_refs(info):
-    html = []
-    # Metrics
-    metrics = []
-    if info['active_users']:
-        metrics.append(f'{info["active_users"]} Users')
-    if info['downloads']:
-        metrics.append(f'{info["downloads"]} Downloads')
-    if metrics:
-        html.append(f'**Impact**: {", ".join(metrics)}  \n')
+    blocks = []
 
-    # Funding & Pubs
-    if info['funding']:
-        html.append(f'**Funding**: {info["funding"]}  \n')
-    if info['publication']:
-        html.append(f'**Publication**: {info["publication"]}  \n')
+    impact = []
+    if info.get("active_users"):
+        impact.append(f"{esc(info['active_users'])} Users")
+    if info.get("downloads"):
+        impact.append(f"{esc(info['downloads'])} Downloads")
+    if impact:
+        blocks.append(f'<div><strong>Impact</strong>: {", ".join(impact)}</div>')
 
-    # Keywords
-    if info['keywords']:
-        badges = [f'`{k}`' for k in info['keywords']]
-        html.append(f'\n**Keywords**: {" ".join(badges)}  \n')
+    if info.get("funding"):
+        blocks.append(f"<div><strong>Funding</strong>: {esc(info['funding'])}</div>")
 
-    html.append(f'\n*Submitted: {info["submission_date"]}*\n')
-    return html
+    if info.get("publication"):
+        pub = (info.get("publication") or "").strip()
+        if pub:
+            blocks.append(
+                f'<div><strong>Publication</strong>: <a href="{esc(pub)}">{esc(pub)}</a></div>'
+            )
+
+    if info.get("keywords"):
+        badges = " ".join([f'<span class="kw-badge">{esc(k)}</span>' for k in info["keywords"]])
+        blocks.append(f'<div class="card-keywords"><strong>Keywords</strong>: {badges}</div>')
+
+    submitted = esc(info.get("submission_date", "") or "")
+    blocks.append(f'<div class="card-submitted">Submitted: {submitted}</div>')
+
+    return f'<div class="card-metrics">{"".join(blocks)}</div>'
 
 
 def _build_media_and_links(info):
-    html = []
+    parts = []
+
     # Image
-    if info['image_path']:
-        html.append(
-            f'<div class="click-zoom" style="margin-top: 10px;">\n'
-            f'    <label>\n'
-            f'        <input type="checkbox">\n'
-            f'        <img src="{info["image_path"]}" alt="{info["image_name"]}" \
-                  width="100%" title="Click to zoom in">\n'
-            f'    </label>\n'
-            f'</div>\n'
+    if info.get("image_path"):
+        parts.append(
+            f'<div class="click-zoom" style="margin-top: 10px;">'
+            f'  <label>'
+            f'    <input type="checkbox">'
+            f'    <img src="{esc(info["image_path"])}" alt="{esc(info.get("image_name","Image"))}" '
+            f'         width="100%" title="Click to zoom in">'
+            f'  </label>'
+            f"</div>"
         )
 
     # Links
-    if info['repo_link']:
-        html.append(f'\n**Repo**: [{info["repo_name"]}]({info["repo_link"]})\n')
-    if info['entry_link']:
-        html.append(f'**Launch**: [{info["entry_name"]}]({info["entry_link"]})\n')
-    if info['media_url']:
-        html.append(f'**Media/Video**: [Watch Demo]({info["media_url"]})\n')
+    link_items = []
+    if info.get("repo_link"):
+        link_items.append(
+            f'<div><strong>Repo</strong>: <a href="{esc(info["repo_link"])}">{esc(info.get("repo_name") or info["repo_link"])}</a></div>'
+        )
+    if info.get("entry_link"):
+        link_items.append(
+            f'<div><strong>Launch</strong>: <a href="{esc(info["entry_link"])}">{esc(info.get("entry_name") or info["entry_link"])}</a></div>'
+        )
+    if info.get("media_url"):
+        link_items.append(
+            f'<div><strong>Media/Video</strong>: <a href="{esc(info["media_url"])}">Watch Demo</a></div>'
+        )
 
-    return html
+    if link_items:
+        parts.append('<div class="card-links">' + "".join(link_items) + "</div>")
+
+    return parts
 
 
 def build_card_html(info):
-    """Constructs the HTML for a single card by composing helper functions."""
-    html = [
-        '<div markdown="block" style="background-color: white;\
-              padding: 20px; border-radius: 10px; '
-        'box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); margin-top: 20px;">\n'
+    """Constructs a single card as HTML with data-* attributes for filtering."""
+    keywords_csv = ",".join(info.get("keywords", [])) if info.get("keywords") else ""
+
+    parts = [
+        f'<article class="gallery-card" '
+        f'data-submission-date="{esc(info.get("submission_date",""))}" '
+        f'data-methodology="{esc(info.get("methodology",""))}" '
+        f'data-country="{esc(info.get("country",""))}" '
+        f'data-research-field="{esc(info.get("research_field",""))}" '
+        f'data-keywords="{esc(keywords_csv)}">'
     ]
 
-    html.extend(_build_header(info))
-    html.extend(_build_details(info))
-    html.extend(_build_metrics_and_refs(info))
-    html.extend(_build_media_and_links(info))
+    parts.append(_build_header(info))
+    parts.append(_build_details(info))
+    parts.append(_build_metrics_and_refs(info))
+    parts.extend(_build_media_and_links(info))
 
-    html.append('</div>\n')
-    return ''.join(html)
+    parts.append("</article>")
+    return "\n".join(parts)
 
 
 def render_card_from_file(file_path):
     """Reads front matter from a file and renders a formatted card."""
     try:
-        with open(f'docs/{file_path}', encoding='utf-8') as f:
+        with open(f"docs/{file_path}", encoding="utf-8") as f:
             content = f.read()
-            metadata, _ = content.split('---', 2)[1:]  # Extract front matter
+            metadata, _ = content.split("---", 2)[1:]  # Extract front matter
             data = yaml.safe_load(metadata)  # Parse YAML
 
         info = extract_metadata(data)
         return build_card_html(info)
 
     except Exception as e:
-        return f'**Error loading card from {file_path}: {str(e)}**'
+        return f"**Error loading card from {file_path}: {str(e)}**"
 
 
-def render_sorted_cards(cards_dir='docs/cards'):
+def render_sorted_cards(cards_dir="docs/cards"):
     """Render all cards from the specified directory, sorted by submission date."""
     card_files = []
 
-    # List all files in the specified directory and filter only .md files
     if os.path.exists(cards_dir):
         for filename in os.listdir(cards_dir):
-            if filename.endswith('.md'):
+            if filename.endswith(".md"):
                 file_path = os.path.join(cards_dir, filename)
 
-                # Read the front matter to extract the date
-                with open(file_path, encoding='utf-8') as f:
+                with open(file_path, encoding="utf-8") as f:
                     try:
-                        # Load YAML front matter
-                        front_matter = yaml.safe_load(f.read().split('---')[1])
-                        submission_date = front_matter.get('submission_date', '')
+                        front_matter = yaml.safe_load(f.read().split("---")[1])
+                        submission_date = front_matter.get("submission_date", "")
 
-                        # Check submission_date
                         if isinstance(submission_date, str):
                             try:
-                                date_obj = datetime.strptime(
-                                    submission_date, '%Y-%m-%d'
-                                )
+                                date_obj = datetime.strptime(submission_date, "%Y-%m-%d")
                             except ValueError:
                                 date_obj = datetime.min
                         else:
-                            is_date = isinstance(submission_date, datetime)
-                            date_obj = submission_date if is_date else datetime.min
+                            date_obj = submission_date if isinstance(submission_date, datetime) else datetime.min
 
                         card_files.append((file_path, date_obj))
                     except Exception as e:
-                        print(f'Error parsing {filename}: {e}')
+                        print(f"Error parsing {filename}: {e}")
 
-    # Sort by submission_date (newest first)
     card_files.sort(key=lambda x: x[1] if x[1] else datetime.min, reverse=True)
 
-    # Now render each card using the render_card_from_file function
-    rendered_cards = ''
+    rendered_cards = ""
+    docs_dir = Path("docs").resolve()
+
     for file_path, _ in card_files:
-        # Strip 'docs/' from the front of the file path
-        clean_path = file_path.replace('docs/', '', 1)
-        rendered_cards += render_card_from_file(clean_path) + '\n'
+        clean_path = str(Path(file_path).resolve().relative_to(docs_dir))
+        rendered_cards += render_card_from_file(clean_path) + "\n"
 
     return rendered_cards
 
@@ -223,17 +247,16 @@ def define_env(env):
     def include_raw_markdown(file_path):
         """Reads and returns raw markdown content from a file without rendering."""
         try:
-            with open(f'docs/{file_path}', encoding='utf-8') as f:
+            with open(f"docs/{file_path}", encoding="utf-8") as f:
                 content = f.read()
-                # Escape the content by using `|safe` to treat it as raw text
-                return f'```markdown\n{content}\n```'
+                return f"```markdown\n{content}\n```"
         except Exception as e:
-            return f'**Error loading file {file_path}: {str(e)}**'
+            return f"**Error loading file {file_path}: {str(e)}**"
 
     @env.macro
     def render_card_from_file_macro(file_path):
         return render_card_from_file(file_path)
 
     @env.macro
-    def render_sorted_cards_macro(cards_dir='docs/cards'):
+    def render_sorted_cards_macro(cards_dir="docs/cards"):
         return render_sorted_cards(cards_dir)
