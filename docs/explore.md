@@ -1,7 +1,13 @@
-# Welcome to the `#nomad-gallery`
+---
+title: NOMAD Gallery | Explore
+---
 
-Welcome to <font color="#2a4cdf">**#nomad-gallery**</font> — a space to showcase innovative features, uploads, and use cases created with the NOMAD platform. Whether you want to share your latest work or explore what’s possible, this is the place to **engage, discover, and inspire.**
+![NOMAD Gallery logo](assets/logo.png){ width=520 }
 
+<h2> Explore the NOMAD Gallery </h2>
+
+Browse community-submitted use cases showing how NOMAD is used in real research workflows.
+Use the filters below to explore by methodology, research field, or keywords.
 
 <nav class="filter-nav" aria-label="Gallery filters">
   <button class="filter-tab is-active" type="button"
@@ -20,14 +26,15 @@ Welcome to <font color="#2a4cdf">**#nomad-gallery**</font> — a space to showca
           data-panel="panel-keywords" aria-controls="panel-keywords" aria-expanded="false">
     Keywords
   </button>
+
+  <div class="filter-nav-spacer"></div>
+
   <button class="filter-tab" type="button"
           data-panel="panel-sort" aria-controls="panel-sort" aria-expanded="false">
     Sort
   </button>
 
-  <div class="filter-nav-spacer"></div>
-
-  <button id="clearGalleryFilters" class="filter-clear" type="button">
+  <button id="clearGalleryFilters" class="filter-tab" type="button">
     Clear
   </button>
 </nav>
@@ -45,12 +52,14 @@ Welcome to <font color="#2a4cdf">**#nomad-gallery**</font> — a space to showca
 
   <div id="panel-field" class="filter-panel" role="region" aria-label="Research field filter">
     <label for="filterField">Search research field</label>
-    <input id="filterField" type="search" placeholder="e.g., Catalysis" autocomplete="off" />
+    <input id="filterField" type="search" placeholder="e.g., Catalysis" autocomplete="off" list="fieldSuggestions" />
+    <datalist id="fieldSuggestions"></datalist>
   </div>
 
   <div id="panel-country" class="filter-panel" role="region" aria-label="Country filter">
     <label for="filterCountry">Search country</label>
-    <input id="filterCountry" type="search" placeholder="e.g., Germany" autocomplete="off" />
+    <input id="filterCountry" type="search" placeholder="e.g., Germany" autocomplete="off" list="countrySuggestions" />
+    <datalist id="countrySuggestions"></datalist>
   </div>
 
   <div id="panel-keywords" class="filter-panel" role="region" aria-label="Keyword filter">

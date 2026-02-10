@@ -1,7 +1,11 @@
+/* Hide the auto page title at the top of the content area (all pages) */
+.md-content__inner > h1:first-child {
+  display: none;
+}
+
 /* =========================
    Gallery filter UI
    ========================= */
-
 .filter-nav {
   display: flex;
   flex-wrap: wrap;
@@ -17,8 +21,14 @@
   backdrop-filter: blur(6px);
 }
 
-.filter-tab,
-.filter-clear {
+/* Spacer pushes Sort + Clear to the right (as you intended) */
+.filter-nav-spacer {
+  flex: 1 1 auto;
+  min-width: 8px;
+}
+
+
+.filter-tab {
   appearance: none;
   border: 1px solid rgba(0, 0, 0, 0.18);
   background: rgba(255, 255, 255, 0.95);
@@ -37,14 +47,12 @@
   transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease, background 120ms ease;
 }
 
-.filter-tab:hover,
-.filter-clear:hover {
+.filter-tab:hover {
   background: rgba(42, 76, 223, 0.04);
   border-color: rgba(42, 76, 223, 0.35);
 }
 
-.filter-tab:focus-visible,
-.filter-clear:focus-visible {
+.filter-tab:focus-visible {
   outline: 3px solid rgba(42, 76, 223, 0.35);
   outline-offset: 2px;
 }
@@ -81,8 +89,8 @@
 }
 
 .filter-panel label {
-  font-weight: 700;
-  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 4px;
 }
 
 .filter-panel input,
@@ -109,7 +117,7 @@
   padding-top: 10px;
   border-top: 1px solid rgba(0,0,0,0.08);
 
-  font-size: 0.95rem;
+ 
   opacity: 0.85;
 }
 
@@ -181,4 +189,117 @@
 .gallery-card a {
   text-decoration: underline;
   text-underline-offset: 2px;
+}
+
+/* =========================
+   Rotating highlights (HTML renderer)
+   ========================= */
+.featured-rotator {
+  position: relative;
+}
+
+.featured-rotator__slide { 
+  display: none; 
+}
+
+.featured-rotator__slide.is-active { 
+  display: block; 
+}
+
+/* Navigation controls container */
+.rotator-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+  padding: 10px;
+}
+
+/* Previous/Next buttons */
+.rotator-btn {
+  appearance: none;
+  background: rgba(42, 76, 223, 0.9);
+  border: 1px solid rgba(42, 76, 223, 1);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  transition: all 150ms ease;
+  padding: 0;
+}
+
+.rotator-btn:hover {
+  background: rgba(42, 76, 223, 1);
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(42, 76, 223, 0.3);
+}
+
+.rotator-btn:active {
+  transform: scale(0.95);
+}
+
+.rotator-btn:focus-visible {
+  outline: 3px solid rgba(42, 76, 223, 0.4);
+  outline-offset: 2px;
+}
+
+.rotator-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Indicator dots */
+.rotator-dots {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.rotator-dot {
+  appearance: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  padding: 0;
+  transition: all 150ms ease;
+}
+
+.rotator-dot:hover {
+  background: rgba(42, 76, 223, 0.5);
+  transform: scale(1.2);
+}
+
+.rotator-dot.is-active {
+  background: rgba(42, 76, 223, 0.9);
+  border-color: rgba(42, 76, 223, 1);
+  width: 12px;
+  height: 12px;
+}
+
+.rotator-dot:focus-visible {
+  outline: 2px solid rgba(42, 76, 223, 0.4);
+  outline-offset: 2px;
+}
+
+@media (max-width: 560px) {
+  .rotator-controls {
+    gap: 12px;
+  }
+  
+  .rotator-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
 }
