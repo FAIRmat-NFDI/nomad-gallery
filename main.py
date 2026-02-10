@@ -1,7 +1,8 @@
+import html
 import os
 from datetime import datetime
 from pathlib import Path
-import html
+
 import yaml
 
 
@@ -24,8 +25,9 @@ def extract_metadata(data):
     # Handle Images
     image_path = (data.get("image_path", "") or "").strip()
     if "github.com" in image_path:
-        image_path = image_path.replace("github.com", "raw.githubusercontent.com").replace(
-            "/blob/", "/"
+        image_path = (
+            image_path.replace("github.com", "raw.githubusercontent.com")
+            .replace("/blob/", "/")
         )
 
     # Handle Links with Fallbacks
@@ -73,7 +75,11 @@ def _build_header(info):
     if info.get("country"):
         meta_parts.append(f"({esc(info['country'])})")
 
-    meta_line = f'<div class="card-meta">{" , ".join(meta_parts)}</div>' if meta_parts else ""
+    meta_line = (
+        f'<div class="card-meta">{", ".join(meta_parts)}</div>'
+        if meta_parts
+        else ""
+    )
 
     return (
         f'<h3 class="card-title">{title}</h3>'
@@ -84,12 +90,15 @@ def _build_header(info):
 
 def _build_details(info):
     rows = []
-    rows.append(f"<div><strong>Submitter</strong>: {esc(info.get('submitter', 'Unknown Submitter'))}</div>")
+    submitter = esc(info.get('submitter', 'Unknown Submitter'))
+    rows.append(f"<div><strong>Submitter</strong>: {submitter}</div>")
 
     if info.get("coauthors"):
-        rows.append(f"<div><strong>Coauthors</strong>: {esc(', '.join(info['coauthors']))}</div>")
+        coauthors = esc(', '.join(info['coauthors']))
+        rows.append(f"<div><strong>Coauthors</strong>: {coauthors}</div>")
     if info.get("methodology"):
-        rows.append(f"<div><strong>Methodology</strong>: {esc(info['methodology'])}</div>")
+        methodology = esc(info['methodology'])
+        rows.append(f"<div><strong>Methodology</strong>: {methodology}</div>")
     if info.get("technique"):
         rows.append(f"<div><strong>Technique</strong>: {esc(info['technique'])}</div>")
     if info.get("data_size"):
@@ -115,13 +124,19 @@ def _build_metrics_and_refs(info):
     if info.get("publication"):
         pub = (info.get("publication") or "").strip()
         if pub:
+            pub_esc = esc(pub)
             blocks.append(
-                f'<div><strong>Publication</strong>: <a href="{esc(pub)}">{esc(pub)}</a></div>'
+                f'<div><strong>Publication</strong>: '
+                f'<a href="{pub_esc}">{pub_esc}</a></div>'
             )
 
     if info.get("keywords"):
-        badges = " ".join([f'<span class="kw-badge">{esc(k)}</span>' for k in info["keywords"]])
-        blocks.append(f'<div class="card-keywords"><strong>Keywords</strong>: {badges}</div>')
+        badges = " ".join(
+            [f'<span class="kw-badge">{esc(k)}</span>' for k in info["keywords"]]
+        )
+        blocks.append(
+            f'<div class="card-keywords"><strong>Keywords</strong>: {badges}</div>'
+        )
 
     return f'<div class="card-metrics">{"".join(blocks)}</div>'
 
@@ -135,8 +150,9 @@ def _build_media_and_links(info):
             f'<div class="click-zoom" style="margin-top: 10px;">'
             f'  <label>'
             f'    <input type="checkbox">'
-            f'    <img src="{esc(info["image_path"])}" alt="{esc(info.get("image_name","Image"))}" '
-            f'         width="100%" title="Click to zoom in">'
+            f'    <img src="{esc(info["image_path"])}" '
+            f'alt="{esc(info.get("image_name","Image"))}" '
+            f'width="100%" title="Click to zoom in">'
             f'  </label>'
             f"</div>"
         )
@@ -144,17 +160,32 @@ def _build_media_and_links(info):
     # Icon-based Links
     link_items = []
     if info.get("repo_link"):
+        github_svg = (
+            '<svg viewBox="0 0 16 16" fill="currentColor">'
+            '<path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 '
+            '7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53'
+            '-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01'
+            '-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52'
+            '.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82'
+            '-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 '
+            '1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82'
+            '.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 '
+            '3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 '
+            '0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>'
+            '</svg>'
+        )
         link_items.append(
             f'<a href="{esc(info["repo_link"])}" class="icon-link" '
-            f'aria-label="View Repository" target="_blank" rel="noopener">'
-            f'<svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>'
-            f'</a>'
+            f'aria-label="View Repository" target="_blank" '
+            f'rel="noopener">{github_svg}</a>'
         )
     if info.get("entry_link"):
+        nomad_fallback = "this.parentElement.innerHTML='🚀'"
         link_items.append(
             f'<a href="{esc(info["entry_link"])}" class="icon-link" '
             f'aria-label="Open in NOMAD" target="_blank" rel="noopener">'
-            f'<img src="assets/nomad-icon.png" alt="NOMAD" onerror="this.parentElement.innerHTML=\'<span class=&quot;emoji-icon&quot;>🚀</span>\'" />'
+            f'<img src="assets/nomad-icon.png" alt="NOMAD" '
+            f'onerror="{nomad_fallback}" />'
             f'</a>'
         )
     if info.get("media_url"):
@@ -176,10 +207,14 @@ def _build_media_and_links(info):
     if link_items or info.get("submission_date"):
         footer_html = '<div class="card-icon-links">'
         if link_items:
-            footer_html += '<div class="card-icons-group">' + "".join(link_items) + '</div>'
+            icons_html = '<div class="card-icons-group">' + "".join(link_items)
+            footer_html += icons_html + '</div>'
         if info.get("submission_date"):
             submitted = esc(info.get("submission_date", "") or "")
-            footer_html += f'<div class="card-submitted-inline">Submitted: {submitted}</div>'
+            footer_html += (
+                f'<div class="card-submitted-inline">'
+                f'Submitted: {submitted}</div>'
+            )
         footer_html += '</div>'
         parts.append(footer_html)
 
@@ -239,11 +274,17 @@ def render_sorted_cards(cards_dir="docs/cards"):
 
                         if isinstance(submission_date, str):
                             try:
-                                date_obj = datetime.strptime(submission_date, "%Y-%m-%d")
+                                date_obj = datetime.strptime(
+                                    submission_date, "%Y-%m-%d"
+                                )
                             except ValueError:
                                 date_obj = datetime.min
                         else:
-                            date_obj = submission_date if isinstance(submission_date, datetime) else datetime.min
+                            date_obj = (
+                                submission_date
+                                if isinstance(submission_date, datetime)
+                                else datetime.min
+                            )
 
                         card_files.append((file_path, date_obj))
                     except Exception as e:
