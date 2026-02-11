@@ -1,0 +1,15 @@
+{#- Hide footer navigation -#}
+<footer class="md-footer">
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+        {% if config.copyright %}
+          <div class="md-footer-copyright__highlight">
+            {{ config.copyright }}
+          </div>
+        {% endif %}
+      </div>
+      {% include "partials/social.html" %}
+    </div>
+  </div>
+</footer>

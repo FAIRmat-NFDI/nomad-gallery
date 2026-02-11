@@ -1,90 +1,384 @@
-
-.md-header__button.md-logo :where(img,svg) {
-    width: 100%;
-    height: 30px;
+/* Hide the auto page title at the top of the content area (all pages) */
+.md-content__inner > h1:first-child {
+  display: none;
 }
 
-.md-header, .md-header__inner {
-    background-color: #fff;
-    color: #2A4CDF;
+/* =========================
+   Gallery filter UI
+   ========================= */
+.filter-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+
+  margin: 14px 0 8px;
+  padding: 6px 8px;
+
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(42, 76, 223, 0.04);
+  backdrop-filter: blur(6px);
 }
 
-.md-header[data-md-state=shadow] {
-    box-shadow: 0px 2px 4px -1px rgb(0 0 0 / 20%), 0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%);
-    transition: box-shadow 200ms linear;
+/* Spacer pushes Sort + Clear to the right (as you intended) */
+.filter-nav-spacer {
+  flex: 1 1 auto;
+  min-width: 8px;
 }
 
-.md-header__inner {
-    height: 80px;
+
+.filter-tab {
+  appearance: none;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  background: rgba(255, 255, 255, 0.95);
+
+  padding: 4px 10px;
+  border-radius: 999px;
+
+  font-weight: 600;
+  font-size: 0.78rem;
+  line-height: 1.2;
+
+  color: #2A4CDF;
+  cursor: pointer;
+  user-select: none;
+
+  transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease, background 120ms ease;
 }
 
-.md-header__topic {
-    font-size: 24px;
+.filter-tab:hover {
+  background: rgba(42, 76, 223, 0.04);
+  border-color: rgba(42, 76, 223, 0.35);
 }
 
-.md-footer {
-    background-color: #2A4CDF;
+.filter-tab:focus-visible {
+  outline: 3px solid rgba(42, 76, 223, 0.35);
+  outline-offset: 2px;
 }
 
-.md-search__form:hover {
-    background-color: rgba(0,0,0,.13);
+.filter-tab.is-active {
+  background: #2A4CDF;
+  color: #ffffff;
+  border-color: #2A4CDF;
 }
 
-.md-typeset h1 {
-    color: black;
-    font-weight: 700;
+.filter-tab.is-active::before {
+    display: none;  
 }
 
-.youtube {
-    position: relative;
-    width: 100%;
-    height: 0;
-    padding-bottom: 56.25%;
+.filter-panels {
+  margin: 0 0 18px;
+  padding: 14px 14px 12px;
+
+  border-radius: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.85);
+
+  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
 }
 
-.youtube iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+.filter-panel {
+  display: none;
 }
 
-.home-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-column-gap: 24px;
-    row-gap: 24px;
+.filter-panel.is-open {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
 }
 
-.home-grid div {
-    border-radius: 4px;
-    padding: 24px;
-    background-color: #f3e9d9;
+.filter-panel label {
+  font-weight: 600;
+  margin-bottom: 4px;
 }
 
-.home-grid h3 {
-    margin-top: 0;
-    font-weight: 700;
+.filter-panel input,
+.filter-panel select {
+  width: 100%;
+  padding: 10px 12px;
+
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.18);
+  background: rgba(255,255,255,0.98);
+
+  transition: border-color 120ms ease, box-shadow 120ms ease;
 }
 
-.click-zoom {
-    text-align: center;
+.filter-panel input:focus,
+.filter-panel select:focus {
+  outline: none;
+  border-color: rgba(42, 76, 223, 0.55);
+  box-shadow: 0 0 0 3px rgba(42, 76, 223, 0.18);
 }
 
-.click-zoom input[type=checkbox] {
-    z-index: 0;
-    display: none
+.gallery-results {
+  margin: 10px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid rgba(0,0,0,0.08);
+
+ 
+  opacity: 0.85;
 }
 
-.click-zoom img {
-    transition: transform 0.25s ease;
-    z-index: 0;
-    cursor: zoom-in
+@media (max-width: 560px) {
+  .filter-nav {
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .filter-tab,
+  .filter-clear {
+    padding: 9px 10px;
+    font-size: 0.9rem;
+  }
 }
 
-.click-zoom input[type=checkbox]:checked~img {
-    transform: scale(2);
-    z-index: 0;
-    cursor: zoom-out
+/* =========================
+   Gallery cards (HTML renderer)
+   ========================= */
+
+.gallery-card {
+  background: rgba(255,255,255,0.95);
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 14px;
+  padding: 16px 16px 14px;
+  margin: 16px 0;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+}
+
+.card-title {
+  margin: 0 0 6px 0;
+  font-weight: 800;
+}
+
+.card-meta {
+  margin: 0 0 10px 0;
+  opacity: 0.85;
+}
+
+.card-description {
+  margin: 0 0 12px 0;
+}
+
+.card-details > div,
+.card-metrics > div,
+.card-links > div {
+  margin: 4px 0;
+}
+
+.kw-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(0,0,0,0.12);
+  background: rgba(0,0,0,0.03);
+  margin: 2px 6px 2px 0;
+  font-size: 0.85em;
+  white-space: nowrap;
+}
+
+.card-submitted {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(0,0,0,0.08);
+  opacity: 0.8;
+}
+
+/* Icon-based link bar */
+.card-icon-links {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0,0,0,0.08);
+}
+
+.card-icons-group {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.card-submitted-inline {
+  font-size: 0.8rem;
+  opacity: 0.7;
+  white-space: nowrap;
+}
+
+.icon-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(42, 76, 223, 0.08);
+  border: 1px solid rgba(42, 76, 223, 0.15);
+  transition: all 150ms ease;
+  text-decoration: none;
+  position: relative;
+}
+
+.icon-link:hover {
+  background: rgba(42, 76, 223, 0.15);
+  border-color: rgba(42, 76, 223, 0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.icon-link svg,
+.icon-link img {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.icon-link .emoji-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* Tooltip on hover */
+.icon-link::after {
+  content: attr(aria-label);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.85);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease;
+  margin-bottom: 6px;
+}
+
+.icon-link:hover::after {
+  opacity: 1;
+}
+
+/* Optional: slightly nicer link look inside cards */
+.gallery-card a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* =========================
+   Rotating highlights (HTML renderer)
+   ========================= */
+.featured-rotator {
+  position: relative;
+}
+
+.featured-rotator__slide { 
+  display: none; 
+}
+
+.featured-rotator__slide.is-active { 
+  display: block; 
+}
+
+/* Navigation controls container */
+.rotator-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+  padding: 10px;
+}
+
+/* Previous/Next buttons */
+.rotator-btn {
+  appearance: none;
+  background: rgba(42, 76, 223, 0.9);
+  border: 1px solid rgba(42, 76, 223, 1);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  transition: all 150ms ease;
+  padding: 0;
+}
+
+.rotator-btn:hover {
+  background: rgba(42, 76, 223, 1);
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(42, 76, 223, 0.3);
+}
+
+.rotator-btn:active {
+  transform: scale(0.95);
+}
+
+.rotator-btn:focus-visible {
+  outline: 3px solid rgba(42, 76, 223, 0.4);
+  outline-offset: 2px;
+}
+
+.rotator-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Indicator dots */
+.rotator-dots {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.rotator-dot {
+  appearance: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  padding: 0;
+  transition: all 150ms ease;
+}
+
+.rotator-dot:hover {
+  background: rgba(42, 76, 223, 0.5);
+  transform: scale(1.2);
+}
+
+.rotator-dot.is-active {
+  background: rgba(42, 76, 223, 0.9);
+  border-color: rgba(42, 76, 223, 1);
+  width: 12px;
+  height: 12px;
+}
+
+.rotator-dot:focus-visible {
+  outline: 2px solid rgba(42, 76, 223, 0.4);
+  outline-offset: 2px;
+}
+
+@media (max-width: 560px) {
+  .rotator-controls {
+    gap: 12px;
+  }
+  
+  .rotator-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
 }
