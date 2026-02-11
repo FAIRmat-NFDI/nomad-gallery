@@ -6,11 +6,11 @@ country: DE
 research_field: Material Science
 methodology_type: Computational
 technique: MD simulations
-coauthors: 
+coauthors:
   - Joe Rudzinski
 description: This is a test card to verify the new schema fields. It demonstrates how the Research Field, Institution, Data Size, and Metrics appear on the gallery card.
 submission_date: 2025-12-13
-image_path: assets/IL.png
+image_path: assets/ionic_liquids.png
 image_name: NOMAD Logo
 repo_link: https://github.com/FAIRmat-NFDI/nomad-gallery
 repo_name: NOMAD Gallery Repo
