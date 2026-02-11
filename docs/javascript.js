@@ -176,9 +176,16 @@
 
   // MkDocs Material (navigation.instant) support
   if (typeof window.document$ !== "undefined" && window.document$?.subscribe) {
-    window.document$.subscribe(() => initGalleryUI());
-  } else {
+    window.document$.subscribe(() => {
+      initGalleryUI();
+    });
+  }
+  // Always attach DOMContentLoaded as fallback
+  if (document.readyState === 'loading') {
     document.addEventListener("DOMContentLoaded", initGalleryUI);
+  } else {
+    // DOM already loaded
+    initGalleryUI();
   }
 })();
 
@@ -317,8 +324,15 @@
 
   // MkDocs Material (navigation.instant) support
   if (typeof window.document$ !== "undefined" && window.document$?.subscribe) {
-    window.document$.subscribe(() => initRotators());
-  } else {
+    window.document$.subscribe(() => {
+      initRotators();
+    });
+  }
+  // Always attach DOMContentLoaded as fallback
+  if (document.readyState === 'loading') {
     document.addEventListener("DOMContentLoaded", initRotators);
+  } else {
+    // DOM already loaded
+    initRotators();
   }
 })();
