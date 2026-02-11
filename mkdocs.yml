@@ -29,7 +29,6 @@ theme:
     accent: "#008A67"
   font:
     text: "Titillium Web"
-  logo: assets/nomad-plugin-logo.png
   favicon: assets/favicon.png
   features:
     - navigation.instant

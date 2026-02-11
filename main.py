@@ -147,13 +147,10 @@ def _build_media_and_links(info):
     # Image
     if info.get("image_path"):
         parts.append(
-            f'<div class="click-zoom" style="margin-top: 10px;">'
-            f'  <label>'
-            f'    <input type="checkbox">'
-            f'    <img src="{esc(info["image_path"])}" '
+            f'<div style="margin-top: 10px;">'
+            f'  <img src="{esc(info["image_path"])}" '
             f'alt="{esc(info.get("image_name","Image"))}" '
-            f'width="100%" title="Click to zoom in">'
-            f'  </label>'
+            f'width="100%">'
             f"</div>"
         )
 
