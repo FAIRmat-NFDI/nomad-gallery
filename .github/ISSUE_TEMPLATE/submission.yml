@@ -22,7 +22,7 @@ body:
   - type: input
     id: shortname
     attributes:
-      label: Name
+      label: Short Name
       placeholder: "alex_database"
     validations:
       required: true

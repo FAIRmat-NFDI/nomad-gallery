@@ -39,12 +39,11 @@ jobs:
           echo "SHORTNAME=$SHORTNAME" >> $GITHUB_ENV
 
       - name: Extract and Download Screenshot
+        env:
+          SCREENSHOT_MD: ${{ steps.issue-parser.outputs.issueparser_screenshot_url }}
         run: |
-          # The screenshot field will contain markdown like: ![image](https://github.com/user-attachments/...)
-          SCREENSHOT_MD="${{ steps.issue-parser.outputs.issueparser_screenshot_url }}"
-
-          # Use grep to pull out the first http/https URL
-          IMAGE_URL=$(echo "$SCREENSHOT_MD" | grep -Eo '(http|https)://[^)"]+' | head -n 1)
+          # The regex stops at spaces, parentheses, quotes, or angle brackets
+          IMAGE_URL=$(echo "$SCREENSHOT_MD" | grep -Eo 'https?://[^ )">]+' | head -n 1)
 
           mkdir -p docs/assets
 
