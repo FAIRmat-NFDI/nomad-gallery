@@ -129,9 +129,9 @@ body:
       description: Link to a video or GIF.
 
   - type: textarea
-    id: screenshot_url
+    id: image_url
     attributes:
-      label: Screenshot
+      label: Image URL
       description: Drag and drop your image here to generate a link.
     validations:
       required: true

@@ -9,7 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      issues: write # Needed to comment on the issue later (if desired)
+      pull-requests: write
+      # issues: write # Needed to comment on the issue later
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -38,19 +39,19 @@ jobs:
           # Pass the sanitized name to subsequent steps
           echo "SHORTNAME=$SHORTNAME" >> $GITHUB_ENV
 
-      - name: Extract and Download Screenshot
+      - name: Extract and Download Image
         env:
-          SCREENSHOT_MD: ${{ steps.issue-parser.outputs.issueparser_screenshot_url }}
+          IMAGE_MD: ${{ steps.issue-parser.outputs.issueparser_image_url }}
         run: |
           # The regex stops at spaces, parentheses, quotes, or angle brackets
-          IMAGE_URL=$(echo "$SCREENSHOT_MD" | grep -Eo 'https?://[^ )">]+' | head -n 1)
+          IMAGE_URL=$(echo "$IMAGE_MD" | grep -Eo 'https?://[^ )">]+' | head -n 1)
 
           mkdir -p docs/assets
 
           if [ -n "$IMAGE_URL" ]; then
             echo "Downloading image from $IMAGE_URL"
-            curl -sL "$IMAGE_URL" -o "docs/assets/${SHORTNAME}_screenshot.png"
-            echo "IMAGE_PATH=../assets/${SHORTNAME}_screenshot.png" >> $GITHUB_ENV
+            curl -sL "$IMAGE_URL" -o "docs/assets/${SHORTNAME}.png"
+            echo "IMAGE_PATH=../assets/${SHORTNAME}.png" >> $GITHUB_ENV
           else
             echo "No valid image URL found."
             echo "IMAGE_PATH=" >> $GITHUB_ENV
@@ -79,15 +80,23 @@ jobs:
 
           $DESC
 
-          ![Screenshot]($IMAGE_PATH)
+          ![Image]($IMAGE_PATH)
 
           ## Details
           - **Co-authors:** ${{ steps.issue-parser.outputs.issueparser_coauthors }}
           - **Keywords:** ${{ steps.issue-parser.outputs.issueparser_keywords }}
           EOF
 
-      - name: Commit and Push
-        uses: stefanzweifel/git-auto-commit-action@v5
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
         with:
-          commit_message: "feat: add submission card for ${{ env.SHORTNAME }}"
-          file_pattern: "docs/cards/*.md docs/assets/*"
+          commit-message: "feat: add submission card for ${{ steps.issue-parser.outputs.issueparser_name }}"
+          title: "Submission: ${{ steps.issue-parser.outputs.issueparser_name }}"
+          body: |
+            Automated PR to add the submission card for **${{ steps.issue-parser.outputs.issueparser_name }}**.
+
+            Closes #${{ github.event.issue.number }}
+          branch: "submission/${{ env.SHORTNAME }}"
+          add-paths: |
+            docs/cards/*.md
+            docs/assets/*
