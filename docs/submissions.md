@@ -8,7 +8,7 @@ title: NOMAD Gallery | Submit
 **Submission**
 Start by creating a Markdown file following this template to ensure your contribution meets the required format.
 
-Start by filling the (Submission Form Template)[https://github.com/FAIRmat-NFDI/nomad-gallery/issues/new?template=submission.yml].
+Start by filling the [Submission Form Template](https://github.com/FAIRmat-NFDI/nomad-gallery/issues/new?template=submission.yml).
 
 **Publication**
 
