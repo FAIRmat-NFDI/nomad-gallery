@@ -87,12 +87,24 @@ body:
       label: Keywords
       description: Add keywords (one per line).
 
-  # 6. Publications & Funding
+  # 6. References
   - type: input
     id: publication_reference
     attributes:
       label: Publication Reference
       description: DOI or link.
+
+  - type: input
+    id: repo_reference
+    attributes:
+      label: Repository Reference
+      description: Repository.
+
+  - type: input
+    id: dataset_reference
+    attributes:
+      label: Dataset Reference
+      description: Dataset.
 
   - type: input
     id: funding_reference
