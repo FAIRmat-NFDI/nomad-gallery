@@ -34,6 +34,14 @@ body:
     validations:
       required: true
 
+  - type: textarea
+    id: image_url
+    attributes:
+      label: Image URL
+      description: Main image of your entry in gallery.
+    validations:
+      required: true
+
   # 2. Affiliation / Institution
   - type: input
     id: institution
@@ -112,6 +120,12 @@ body:
       label: Funding Reference
       description: Grant number or agency.
 
+  - type: input
+    id: media_url
+    attributes:
+      label: Media URL
+      description: Link to a video or GIF.
+
   # 7. Metrics
   - type: input
     id: estimated_active_users
@@ -122,18 +136,3 @@ body:
     id: downloads
     attributes:
       label: Downloads
-
-  # 8. Media
-  - type: input
-    id: media_url
-    attributes:
-      label: Media URL
-      description: Link to a video or GIF.
-
-  - type: textarea
-    id: image_url
-    attributes:
-      label: Image URL
-      description: Drag and drop your image here to generate a link.
-    validations:
-      required: true
