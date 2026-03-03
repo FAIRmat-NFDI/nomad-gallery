@@ -71,21 +71,35 @@ jobs:
           SUBMITTER: ${{ steps.issue-parser.outputs.issueparser_submitter }}
           RESEARCH_FIELD: ${{ steps.issue-parser.outputs.issueparser_research_field }}
           INSTITUTION: ${{ steps.issue-parser.outputs.issueparser_institution }}
+          COUNTRY: ${{ steps.issue-parser.outputs.issueparser_country }}
           DESC: ${{ steps.issue-parser.outputs.issueparser_description }}
           ISSUE_NUM: ${{ github.event.issue.number }}
+          COAUTHORS: ${{ steps.issue-parser.outputs.issueparser_coauthors }}
+          KEYWORDS: ${{ steps.issue-parser.outputs.issueparser_keywords }}
+          METHODOLOGY: ${{ steps.issue-parser.outputs.issueparser_methodology_type }}
+          TECHNIQUE: ${{ steps.issue-parser.outputs.issueparser_technique }}
+          DATA_SIZE: ${{ steps.issue-parser.outputs.issueparser_data_size }}
+          PUB_REF: ${{ steps.issue-parser.outputs.issueparser_publication_reference }}
+          REPO_REF: ${{ steps.issue-parser.outputs.issueparser_repo_reference }}
+          DATA_REF: ${{ steps.issue-parser.outputs.issueparser_dataset_reference }}
+          FUND_REF: ${{ steps.issue-parser.outputs.issueparser_funding_reference }}
+          MEDIA_URL: ${{ steps.issue-parser.outputs.issueparser_media_url }}
+          ACTIVE_USERS: ${{ steps.issue-parser.outputs.issueparser_estimated_active_users }}
+          DOWNLOADS: ${{ steps.issue-parser.outputs.issueparser_downloads }}
         run: |
           mkdir -p docs/cards
           DATE=$(date +%Y-%m-%d)
-
-          # Use the extension saved in the previous step (fallback to png)
+          FILE="docs/cards/issue-${ISSUE_NUM}.md"
           IMAGE_EXT="${IMG_EXT:-png}"
 
-          cat <<EOF > "docs/cards/issue-${ISSUE_NUM}.md"
+          # 1. Write the required base content
+          cat <<EOF > "$FILE"
           ---
           title: "$TITLE"
           submitter: "$SUBMITTER"
           research_field: "$RESEARCH_FIELD"
           institution: "$INSTITUTION"
+          country: "$COUNTRY"
           submission_date: "$DATE"
           ---
 
@@ -96,9 +110,33 @@ jobs:
           ![Image](../assets/issue-${ISSUE_NUM}.${IMAGE_EXT})
 
           ## Details
-          - **Co-authors:** ${{ steps.issue-parser.outputs.issueparser_coauthors }}
-          - **Keywords:** ${{ steps.issue-parser.outputs.issueparser_keywords }}
           EOF
+
+          # Conditionally append Details
+          [ -n "$COAUTHORS" ] && echo "- **Co-authors:** $COAUTHORS" >> "$FILE"
+          [ -n "$KEYWORDS" ] && echo "- **Keywords:** $KEYWORDS" >> "$FILE"
+          [ -n "$METHODOLOGY" ] && echo "- **Methodology Type:** $METHODOLOGY" >> "$FILE"
+          [ -n "$TECHNIQUE" ] && echo "- **Specific Technique:** $TECHNIQUE" >> "$FILE"
+          [ -n "$DATA_SIZE" ] && echo "- **Data Size:** $DATA_SIZE" >> "$FILE"
+
+          # Conditionally append References section and its items
+          if [ -n "$PUB_REF" ] || [ -n "$REPO_REF" ] || [ -n "$DATA_REF" ] || [ -n "$FUND_REF" ] || [ -n "$MEDIA_URL" ]; then
+            echo "" >> "$FILE"
+            echo "## References" >> "$FILE"
+            [ -n "$PUB_REF" ] && echo "- **Publication:** $PUB_REF" >> "$FILE"
+            [ -n "$REPO_REF" ] && echo "- **Repository:** $REPO_REF" >> "$FILE"
+            [ -n "$DATA_REF" ] && echo "- **Dataset:** $DATA_REF" >> "$FILE"
+            [ -n "$FUND_REF" ] && echo "- **Funding:** $FUND_REF" >> "$FILE"
+            [ -n "$MEDIA_URL" ] && echo "- **Media:** $MEDIA_URL" >> "$FILE"
+          fi
+
+          # Conditionally append Metrics section and its items
+          if [ -n "$ACTIVE_USERS" ] || [ -n "$DOWNLOADS" ]; then
+            echo "" >> "$FILE"
+            echo "## Metrics" >> "$FILE"
+            [ -n "$ACTIVE_USERS" ] && echo "- **Estimated Active Users:** $ACTIVE_USERS" >> "$FILE"
+            [ -n "$DOWNLOADS" ] && echo "- **Downloads:** $DOWNLOADS" >> "$FILE"
+          fi
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
