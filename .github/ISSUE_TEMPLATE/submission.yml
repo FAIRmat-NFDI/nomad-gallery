@@ -78,7 +78,7 @@ body:
   - type: input
     id: data_size
     attributes:
-      label: Data Size (Optional)
+      label: Data Size
       placeholder: "e.g., 50 GB"
 
   - type: textarea
@@ -100,22 +100,22 @@ body:
       label: Funding Reference
       description: Grant number or agency.
 
-  # 7. Metrics (Optional)
+  # 7. Metrics
   - type: input
     id: estimated_active_users
     attributes:
-      label: Estimated Active Users (Optional)
+      label: Estimated Active Users
 
   - type: input
     id: downloads
     attributes:
-      label: Downloads (Optional)
+      label: Downloads
 
   # 8. Media
   - type: input
     id: media_url
     attributes:
-      label: Media URL (Optional)
+      label: Media URL
       description: Link to a video or GIF.
 
   - type: textarea
