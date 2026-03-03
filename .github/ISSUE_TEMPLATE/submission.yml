@@ -11,6 +11,14 @@ body:
 
   # 1. Basic Info & Research Field
   - type: input
+    id: submitter
+    attributes:
+      label: Submitter
+      placeholder: "Firstname Lastname"
+    validations:
+      required: true
+
+  - type: input
     id: research_field
     attributes:
       label: Research Field

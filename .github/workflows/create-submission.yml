@@ -68,6 +68,7 @@ jobs:
       - name: Generate Markdown Card
         env:
           TITLE: ${{ env.title }}
+          SUBMITTER: ${{ steps.issue-parser.outputs.issueparser_submitter }}
           RESEARCH_FIELD: ${{ steps.issue-parser.outputs.issueparser_research_field }}
           INSTITUTION: ${{ steps.issue-parser.outputs.issueparser_institution }}
           DESC: ${{ steps.issue-parser.outputs.issueparser_description }}
@@ -82,6 +83,7 @@ jobs:
           cat <<EOF > "docs/cards/issue-${ISSUE_NUM}.md"
           ---
           title: "$TITLE"
+          submitter: "$SUBMITTER"
           research_field: "$RESEARCH_FIELD"
           institution: "$INSTITUTION"
           submission_date: "$DATE"
