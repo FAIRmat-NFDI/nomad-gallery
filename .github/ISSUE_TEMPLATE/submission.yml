@@ -45,8 +45,7 @@ body:
   - type: input
     id: country
     attributes:
-      label: Country Code
-      placeholder: "e.g., DE, US, FR"
+      label: Country
     validations:
       required: true
 
