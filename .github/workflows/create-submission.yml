@@ -26,16 +26,28 @@ jobs:
           IMAGE_MD: ${{ steps.issue-parser.outputs.issueparser_image_url }}
           ISSUE_NUM: ${{ github.event.issue.number }}
         run: |
-          # The regex stops at spaces, parentheses, quotes, or angle brackets
           IMAGE_URL=$(echo "$IMAGE_MD" | grep -Eo 'https?://[^ )">]+' | head -n 1)
-
           mkdir -p docs/assets
 
           if [ -n "$IMAGE_URL" ]; then
-            # TODO: handle non-png images
             echo "Downloading image from $IMAGE_URL"
-            # Replaced CHANGEME with the issue number
-            curl -sL "$IMAGE_URL" -o "docs/assets/issue-${ISSUE_NUM}.png"
+
+            # Strip any query parameters and get the filename
+            CLEAN_URL="${IMAGE_URL%%?*}"
+            FILENAME=$(basename "$CLEAN_URL")
+
+            # Extract the extension, or default to png if there isn't one
+            if [[ "$FILENAME" == *.* ]]; then
+              EXT="${FILENAME##*.}"
+            else
+              EXT="png"
+            fi
+
+            # Download and save with the extracted extension
+            curl -sL "$IMAGE_URL" -o "docs/assets/issue-${ISSUE_NUM}.${EXT}"
+
+            # Save the extension to the environment for the Markdown step
+            echo "IMG_EXT=$EXT" >> "$GITHUB_ENV"
           else
             echo "No valid image URL found."
             exit 1
@@ -81,7 +93,6 @@ jobs:
             Automated PR to add the submission card for **${{ steps.issue-parser.outputs.issueparser_name }}**.
 
             Closes #${{ github.event.issue.number }}
-          # Used issue number for the branch name
           branch: "submission/issue-${{ github.event.issue.number }}"
           add-paths: |
             docs/cards/*.md
