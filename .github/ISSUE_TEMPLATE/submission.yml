@@ -18,15 +18,6 @@ body:
     validations:
       required: true
 
-  # Shorter name for internal asset storage
-  - type: input
-    id: shortname
-    attributes:
-      label: Short Name
-      placeholder: "alex_database"
-    validations:
-      required: true
-
   - type: input
     id: research_field
     attributes:

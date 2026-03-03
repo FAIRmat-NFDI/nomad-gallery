@@ -21,27 +21,10 @@ jobs:
         with:
           template-path: .github/ISSUE_TEMPLATE/submission.yml
 
-      - name: Sanitize and Check Shortname
-        id: check-name
-        run: |
-          # Grab shortname, make it lowercase, and replace spaces/weird chars with underscores
-          RAW_SHORTNAME="${{ steps.issue-parser.outputs.issueparser_shortname }}"
-          SHORTNAME=$(echo "$RAW_SHORTNAME" | tr '[:upper:]' '[:lower:]' | sed -e 's/ /_/g' -e 's/[^a-z0-9_]//g')
-
-          echo "Sanitized shortname: $SHORTNAME"
-
-          # Duplicate check
-          if [ -f "docs/cards/${SHORTNAME}.md" ]; then
-            echo "::error::A submission card for '${SHORTNAME}' already exists!"
-            exit 1
-          fi
-
-          # Pass the sanitized name to subsequent steps
-          echo "SHORTNAME=$SHORTNAME" >> $GITHUB_ENV
-
       - name: Extract and Download Image
         env:
           IMAGE_MD: ${{ steps.issue-parser.outputs.issueparser_image_url }}
+          ISSUE_NUM: ${{ github.event.issue.number }}
         run: |
           # The regex stops at spaces, parentheses, quotes, or angle brackets
           IMAGE_URL=$(echo "$IMAGE_MD" | grep -Eo 'https?://[^ )">]+' | head -n 1)
@@ -49,12 +32,13 @@ jobs:
           mkdir -p docs/assets
 
           if [ -n "$IMAGE_URL" ]; then
+            # TODO: handle non-png images
             echo "Downloading image from $IMAGE_URL"
-            curl -sL "$IMAGE_URL" -o "docs/assets/${SHORTNAME}.png"
-            echo "IMAGE_PATH=../assets/${SHORTNAME}.png" >> $GITHUB_ENV
+            # Replaced CHANGEME with the issue number
+            curl -sL "$IMAGE_URL" -o "docs/assets/issue-${ISSUE_NUM}.png"
           else
             echo "No valid image URL found."
-            echo "IMAGE_PATH=" >> $GITHUB_ENV
+            exit 1
           fi
 
       - name: Generate Markdown Card
@@ -63,14 +47,15 @@ jobs:
           RESEARCH_FIELD: ${{ steps.issue-parser.outputs.issueparser_research_field }}
           INSTITUTION: ${{ steps.issue-parser.outputs.issueparser_institution }}
           DESC: ${{ steps.issue-parser.outputs.issueparser_description }}
+          ISSUE_NUM: ${{ github.event.issue.number }}
         run: |
           mkdir -p docs/cards
           DATE=$(date +%Y-%m-%d)
 
-          cat <<EOF > "docs/cards/${SHORTNAME}.md"
+          # Replaced CHANGEME with the issue number
+          cat <<EOF > "docs/cards/issue-${ISSUE_NUM}.md"
           ---
           title: "$TITLE"
-          shortname: "$SHORTNAME"
           research_field: "$RESEARCH_FIELD"
           institution: "$INSTITUTION"
           submission_date: "$DATE"
@@ -80,7 +65,7 @@ jobs:
 
           $DESC
 
-          ![Image]($IMAGE_PATH)
+          ![Image](../assets/issue-${ISSUE_NUM}.png)
 
           ## Details
           - **Co-authors:** ${{ steps.issue-parser.outputs.issueparser_coauthors }}
@@ -96,7 +81,8 @@ jobs:
             Automated PR to add the submission card for **${{ steps.issue-parser.outputs.issueparser_name }}**.
 
             Closes #${{ github.event.issue.number }}
-          branch: "submission/${{ env.SHORTNAME }}"
+          # Used issue number for the branch name
+          branch: "submission/issue-${{ github.event.issue.number }}"
           add-paths: |
             docs/cards/*.md
             docs/assets/*
