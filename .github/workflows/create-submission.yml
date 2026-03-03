@@ -15,6 +15,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Extract and Clean Title
+        id: clean-title
+        env:
+          FULL_TITLE: ${{ github.event.issue.title }}
+        run: |
+          # Strip the '[Submission]: ' prefix (and trim any trailing spaces)
+          CLEANED_TITLE="${FULL_TITLE#\[Submission\]: }"
+          CLEANED_TITLE=$(echo "$CLEANED_TITLE" | xargs)
+
+          # Save to environment variables for later steps
+          echo "title=$CLEANED_TITLE" >> "$GITHUB_ENV"
+
       - name: Parse Issue
         uses: stefanbuck/github-issue-parser@v3
         id: issue-parser
@@ -55,7 +67,7 @@ jobs:
 
       - name: Generate Markdown Card
         env:
-          TITLE: ${{ steps.issue-parser.outputs.issueparser_name }}
+          TITLE: ${{ env.title }}
           RESEARCH_FIELD: ${{ steps.issue-parser.outputs.issueparser_research_field }}
           INSTITUTION: ${{ steps.issue-parser.outputs.issueparser_institution }}
           DESC: ${{ steps.issue-parser.outputs.issueparser_description }}
@@ -64,7 +76,9 @@ jobs:
           mkdir -p docs/cards
           DATE=$(date +%Y-%m-%d)
 
-          # Replaced CHANGEME with the issue number
+          # Use the extension saved in the previous step (fallback to png)
+          IMAGE_EXT="${IMG_EXT:-png}"
+
           cat <<EOF > "docs/cards/issue-${ISSUE_NUM}.md"
           ---
           title: "$TITLE"
@@ -77,7 +91,7 @@ jobs:
 
           $DESC
 
-          ![Image](../assets/issue-${ISSUE_NUM}.png)
+          ![Image](../assets/issue-${ISSUE_NUM}.${IMAGE_EXT})
 
           ## Details
           - **Co-authors:** ${{ steps.issue-parser.outputs.issueparser_coauthors }}
@@ -87,10 +101,10 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
-          commit-message: "feat: add submission card for ${{ steps.issue-parser.outputs.issueparser_name }}"
-          title: "Submission: ${{ steps.issue-parser.outputs.issueparser_name }}"
+          commit-message: "feat: add submission card for ${{ env.title }}"
+          title: "Submission: ${{ env.title }}"
           body: |
-            Automated PR to add the submission card for **${{ steps.issue-parser.outputs.issueparser_name }}**.
+            Automated PR to add the submission card for **${{ env.title }}**.
 
             Closes #${{ github.event.issue.number }}
           branch: "submission/issue-${{ github.event.issue.number }}"

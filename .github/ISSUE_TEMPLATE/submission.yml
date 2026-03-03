@@ -1,6 +1,6 @@
 name: Submission
 description: Create a new submission from template.
-title: "[Submission]: "
+title: "[Submission]: New Entry"
 labels: ["submission"]
 # assignees: ["JFRudzinski"]
 body:
@@ -10,14 +10,6 @@ body:
         Thanks for your interest in contributing! Please fill out the details below.
 
   # 1. Basic Info & Research Field
-  - type: input
-    id: name
-    attributes:
-      label: Name
-      placeholder: "e.g. The Alexandria Database hosted by the NOMAD Calculations App"
-    validations:
-      required: true
-
   - type: input
     id: research_field
     attributes:
