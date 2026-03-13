@@ -59,10 +59,10 @@ body:
 
   # 3. Authors (Coauthors)
   - type: textarea
-    id: coauthors
+    id: contributors
     attributes:
-      label: Co-authors
-      description: Please list co-authors (one per line).
+      label: Contributors
+      description: Please list contributors (one per line).
 
   # 4. Methodology
   - type: dropdown

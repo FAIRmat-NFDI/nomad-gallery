@@ -74,7 +74,7 @@ jobs:
           COUNTRY: ${{ steps.issue-parser.outputs.issueparser_country }}
           DESC: ${{ steps.issue-parser.outputs.issueparser_description }}
           ISSUE_NUM: ${{ github.event.issue.number }}
-          COAUTHORS: ${{ steps.issue-parser.outputs.issueparser_coauthors }}
+          CONTRIBUTORS: ${{ steps.issue-parser.outputs.issueparser_contributors }}
           KEYWORDS: ${{ steps.issue-parser.outputs.issueparser_keywords }}
           METHODOLOGY: ${{ steps.issue-parser.outputs.issueparser_methodology_type }}
           TECHNIQUE: ${{ steps.issue-parser.outputs.issueparser_technique }}
@@ -113,7 +113,7 @@ jobs:
           EOF
 
           # Conditionally append Details
-          [ -n "$COAUTHORS" ] && echo "- **Co-authors:** $COAUTHORS" >> "$FILE"
+          [ -n "$CONTRIBUTORS" ] && echo "- **Contributors:** $COAUTHORS" >> "$FILE"
           [ -n "$KEYWORDS" ] && echo "- **Keywords:** $KEYWORDS" >> "$FILE"
           [ -n "$METHODOLOGY" ] && echo "- **Methodology Type:** $METHODOLOGY" >> "$FILE"
           [ -n "$TECHNIQUE" ] && echo "- **Specific Technique:** $TECHNIQUE" >> "$FILE"
