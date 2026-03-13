@@ -2,7 +2,7 @@ name: Submission
 description: Create a new submission from template.
 title: "[Submission]: <Use Case Title>"
 labels: ["submission"]
-# assignees: ["JFRudzinski"]
+assignees: ["JFRudzinski", "ahm531", "natalia3101"]
 body:
   - type: markdown
     attributes:
