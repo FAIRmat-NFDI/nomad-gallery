@@ -1,0 +1,153 @@
+name: Process Approved Submission to Create Cards
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  create-card:
+    if: github.event.label.name == 'submission-approved'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      # issues: write # Needed to comment on the issue later
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract and Clean Title
+        id: clean-title
+        env:
+          FULL_TITLE: ${{ github.event.issue.title }}
+        run: |
+          # Strip the '[Submission]: ' prefix (and trim any trailing spaces)
+          CLEANED_TITLE="${FULL_TITLE#\[Submission\]: }"
+          CLEANED_TITLE=$(echo "$CLEANED_TITLE" | xargs)
+
+          # Save to environment variables for later steps
+          echo "title=$CLEANED_TITLE" >> "$GITHUB_ENV"
+
+      - name: Parse Issue
+        uses: stefanbuck/github-issue-parser@v3
+        id: issue-parser
+        with:
+          template-path: .github/ISSUE_TEMPLATE/submission.yml
+
+      - name: Extract and Download Image
+        env:
+          IMAGE_MD: ${{ steps.issue-parser.outputs.issueparser_image_url }}
+          ISSUE_NUM: ${{ github.event.issue.number }}
+        run: |
+          IMAGE_URL=$(echo "$IMAGE_MD" | grep -Eo 'https?://[^ )">]+' | head -n 1)
+          mkdir -p docs/assets
+
+          if [ -n "$IMAGE_URL" ]; then
+            echo "Downloading image from $IMAGE_URL"
+
+            # Strip any query parameters and get the filename
+            CLEAN_URL="${IMAGE_URL%%?*}"
+            FILENAME=$(basename "$CLEAN_URL")
+
+            # Extract the extension, or default to png if there isn't one
+            if [[ "$FILENAME" == *.* ]]; then
+              EXT="${FILENAME##*.}"
+            else
+              EXT="png"
+            fi
+
+            # Download and save with the extracted extension
+            curl -sL "$IMAGE_URL" -o "docs/assets/issue-${ISSUE_NUM}.${EXT}"
+
+            # Save the extension to the environment for the Markdown step
+            echo "IMG_EXT=$EXT" >> "$GITHUB_ENV"
+          else
+            echo "No valid image URL found."
+            exit 1
+          fi
+
+      - name: Generate Markdown Card
+        env:
+          TITLE: ${{ env.title }}
+          SUBMITTER: ${{ steps.issue-parser.outputs.issueparser_submitter }}
+          RESEARCH_FIELD: ${{ steps.issue-parser.outputs.issueparser_research_field }}
+          INSTITUTION: ${{ steps.issue-parser.outputs.issueparser_institution }}
+          COUNTRY: ${{ steps.issue-parser.outputs.issueparser_country }}
+          DESC: ${{ steps.issue-parser.outputs.issueparser_description }}
+          ISSUE_NUM: ${{ github.event.issue.number }}
+          CONTRIBUTORS: ${{ steps.issue-parser.outputs.issueparser_contributors }}
+          KEYWORDS: ${{ steps.issue-parser.outputs.issueparser_keywords }}
+          METHODOLOGY: ${{ steps.issue-parser.outputs.issueparser_methodology_type }}
+          TECHNIQUE: ${{ steps.issue-parser.outputs.issueparser_technique }}
+          DATA_SIZE: ${{ steps.issue-parser.outputs.issueparser_data_size }}
+          PUB_REF: ${{ steps.issue-parser.outputs.issueparser_publication_reference }}
+          REPO_REF: ${{ steps.issue-parser.outputs.issueparser_repo_reference }}
+          DATA_REF: ${{ steps.issue-parser.outputs.issueparser_dataset_reference }}
+          FUND_REF: ${{ steps.issue-parser.outputs.issueparser_funding_reference }}
+          MEDIA_URL: ${{ steps.issue-parser.outputs.issueparser_media_url }}
+          ACTIVE_USERS: ${{ steps.issue-parser.outputs.issueparser_estimated_active_users }}
+          DOWNLOADS: ${{ steps.issue-parser.outputs.issueparser_downloads }}
+        run: |
+          mkdir -p docs/cards
+          DATE=$(date +%Y-%m-%d)
+          FILE="docs/cards/issue-${ISSUE_NUM}.md"
+          IMAGE_EXT="${IMG_EXT:-png}"
+
+          # 1. Write the required base content
+          cat <<EOF > "$FILE"
+          ---
+          title: "$TITLE"
+          submitter: "$SUBMITTER"
+          research_field: "$RESEARCH_FIELD"
+          institution: "$INSTITUTION"
+          country: "$COUNTRY"
+          submission_date: "$DATE"
+          ---
+
+          # $TITLE
+
+          $DESC
+
+          ![Image](../assets/issue-${ISSUE_NUM}.${IMAGE_EXT})
+
+          ## Details
+          EOF
+
+          # Conditionally append Details
+          [ -n "$CONTRIBUTORS" ] && echo "- **Contributors:** $COAUTHORS" >> "$FILE"
+          [ -n "$KEYWORDS" ] && echo "- **Keywords:** $KEYWORDS" >> "$FILE"
+          [ -n "$METHODOLOGY" ] && echo "- **Methodology Type:** $METHODOLOGY" >> "$FILE"
+          [ -n "$TECHNIQUE" ] && echo "- **Specific Technique:** $TECHNIQUE" >> "$FILE"
+          [ -n "$DATA_SIZE" ] && echo "- **Data Size:** $DATA_SIZE" >> "$FILE"
+
+          # Conditionally append References section and its items
+          if [ -n "$PUB_REF" ] || [ -n "$REPO_REF" ] || [ -n "$DATA_REF" ] || [ -n "$FUND_REF" ] || [ -n "$MEDIA_URL" ]; then
+            echo "" >> "$FILE"
+            echo "## References" >> "$FILE"
+            [ -n "$PUB_REF" ] && echo "- **Publication:** $PUB_REF" >> "$FILE"
+            [ -n "$REPO_REF" ] && echo "- **Repository:** $REPO_REF" >> "$FILE"
+            [ -n "$DATA_REF" ] && echo "- **Dataset:** $DATA_REF" >> "$FILE"
+            [ -n "$FUND_REF" ] && echo "- **Funding:** $FUND_REF" >> "$FILE"
+            [ -n "$MEDIA_URL" ] && echo "- **Media:** $MEDIA_URL" >> "$FILE"
+          fi
+
+          # Conditionally append Metrics section and its items
+          if [ -n "$ACTIVE_USERS" ] || [ -n "$DOWNLOADS" ]; then
+            echo "" >> "$FILE"
+            echo "## Metrics" >> "$FILE"
+            [ -n "$ACTIVE_USERS" ] && echo "- **Estimated Active Users:** $ACTIVE_USERS" >> "$FILE"
+            [ -n "$DOWNLOADS" ] && echo "- **Downloads:** $DOWNLOADS" >> "$FILE"
+          fi
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "feat: add submission card for ${{ env.title }}"
+          title: "Submission: ${{ env.title }}"
+          body: |
+            Automated PR to add the submission card for **${{ env.title }}**.
+
+            Closes #${{ github.event.issue.number }}
+          branch: "submission/issue-${{ github.event.issue.number }}"
+          add-paths: |
+            docs/cards/*.md
+            docs/assets/*
