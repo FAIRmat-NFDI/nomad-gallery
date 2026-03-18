@@ -1,9 +1,20 @@
 ---
 title: NOMAD Gallery | Submit
 ---
-![NOMAD Gallery logo](assets/logo.png){ width=520 }
+![NOMAD Gallery banner](assets/images/page/header.svg)
 
-<h2> We welcome contributions to the NOMAD gallery! </h2>
+<p class="section-title">
+  <span class="section-icon">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M22 2L11 13"/>
+      <path d="M22 2L15 22 11 13 2 9l20-7z"/>
+    </svg>
+  </span>
+  Submit your use case
+</p>
+<p class="section-subtitle">
+  We welcome contributions to the NOMAD gallery!
+</p>
 
 To submit a new entry, simply fill out the [**submission form**](https://github.com/FAIRmat-NFDI/nomad-gallery/issues/new?template=submission.yml).
 

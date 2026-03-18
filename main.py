@@ -10,10 +10,34 @@ def esc(x):
     """HTML-escape any value safely."""
     return html.escape("" if x is None else str(x), quote=True)
 
+CARD_GRADIENTS = [
+    "linear-gradient(135deg, #a8c8f0 0%, #7baad8 50%, #5a92c6 100%)",
+    "linear-gradient(135deg, #b0d0f4 0%, #85b5e0 50%, #6a9ed0 100%)",
+    "linear-gradient(135deg, #9ec4ee 0%, #72a4d4 50%, #5890c2 100%)",
+    "linear-gradient(135deg, #b8d6f6 0%, #90bee4 50%, #74a8d4 100%)",
+    "linear-gradient(135deg, #a4caf2 0%, #7eb0dc 50%, #6298c8 100%)",
+]
 
-def extract_metadata(data):
-    """Extracts and cleans all fields from the YAML data."""
-    # Handle lists (Coauthors, Keywords)
+
+def _read_front_matter_from_docs(file_path):
+    """Read YAML front matter from docs/<file_path> safely."""
+    with open(f"docs/{file_path}", encoding="utf-8") as f:
+        content = f.read()
+
+    if not content.startswith("---"):
+        raise ValueError(f"{file_path} does not start with YAML front matter.")
+
+    parts = content.split("---", 2)
+    if len(parts) < 3:
+        raise ValueError(f"{file_path} has invalid YAML front matter.")
+
+    metadata = yaml.safe_load(parts[1]) or {}
+    body = parts[2].strip()
+    return metadata, body
+
+
+def _normalize_use_case_info(data, body=""):
+    """Normalize richer use-case metadata without affecting old card logic."""
     coauthors = data.get("coauthors", [])
     if isinstance(coauthors, str):
         coauthors = [c.strip() for c in coauthors.split(",") if c.strip()]
@@ -22,30 +46,31 @@ def extract_metadata(data):
     if isinstance(keywords, str):
         keywords = [k.strip() for k in keywords.split(",") if k.strip()]
 
-    # Handle Images
-    image_path = (data.get("image_path", "") or "").strip()
+    image_path = (data.get("image_path") or data.get("image") or "").strip()
     if "github.com" in image_path:
         image_path = (
             image_path.replace("github.com", "raw.githubusercontent.com")
             .replace("/blob/", "/")
         )
 
-    # Handle Links with Fallbacks
-    repo_link = (data.get("repo_link", "") or "").strip()
-    repo_name = (data.get("repo_name", "") or "").strip() or repo_link
-    entry_link = (data.get("entry_link", "") or "").strip()
-    entry_name = (data.get("entry_name", "") or "").strip() or entry_link
+    repo_link = (data.get("repo_link") or data.get("repository_reference") or "").strip()
+    entry_link = (data.get("entry_link") or data.get("external_url") or "").strip()
 
     return {
         "title": data.get("title", "Untitled Submission"),
-        "submitter": data.get("submitter", "Unknown Submitter"),
-        "description": data.get("description", "No description available."),
-        "submission_date": data.get("submission_date", "Unknown date"),
+        "submitter": data.get("submitter") or data.get("submitted_by") or "Unknown Submitter",
+        "description": data.get("description")
+        or data.get("summary")
+        or body
+        or "No description available.",
+        "submission_date": data.get("submission_date")
+        or data.get("submitted_date")
+        or "",
         "institution": (data.get("institution", "") or "").strip(),
         "country": (data.get("country", "") or "").strip(),
         "research_field": (data.get("research_field", "") or "").strip(),
         "methodology": (data.get("methodology_type", "") or "").strip(),
-        "technique": (data.get("technique", "") or "").strip(),
+        "technique": (data.get("technique") or data.get("specific_technique") or "").strip(),
         "data_size": (data.get("data_size", "") or "").strip(),
         "active_users": data.get("estimated_active_users", None),
         "downloads": data.get("downloads", None),
@@ -54,207 +79,84 @@ def extract_metadata(data):
         "keywords": keywords,
         "publication": (data.get("publication_reference", "") or "").strip(),
         "funding": (data.get("funding_reference", "") or "").strip(),
-        "image_name": data.get("image_name", "Image"),
+        "dataset_reference": (data.get("dataset_reference", "") or "").strip(),
+        "image_name": data.get("image_name", data.get("title", "Image")),
         "image_path": image_path,
         "repo_link": repo_link,
-        "repo_name": repo_name,
+        "repo_name": (data.get("repo_name", "") or "").strip() or repo_link,
         "entry_link": entry_link,
-        "entry_name": entry_name,
+        "entry_name": (data.get("entry_name", "") or "").strip() or entry_link,
     }
 
-
-def _build_header(info):
-    title = esc(info.get("title", "Untitled Submission"))
-    description = esc(info.get("description", "No description available."))
-
-    meta_parts = []
-    if info.get("research_field"):
-        meta_parts.append(f"<strong>Field</strong>: {esc(info['research_field'])}")
-    if info.get("institution"):
-        meta_parts.append(f"<strong>Inst</strong>: {esc(info['institution'])}")
-    if info.get("country"):
-        meta_parts.append(f"({esc(info['country'])})")
-
-    meta_line = (
-        f'<div class="card-meta">{", ".join(meta_parts)}</div>'
-        if meta_parts
-        else ""
-    )
-
-    return (
-        f'<h3 class="card-title">{title}</h3>'
-        f"{meta_line}"
-        f'<p class="card-description">{description}</p>'
-    )
+def _icon_calendar():
+    return """
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+      <line x1="16" y1="2" x2="16" y2="6"></line>
+      <line x1="8" y1="2" x2="8" y2="6"></line>
+      <line x1="3" y1="10" x2="21" y2="10"></line>
+    </svg>
+    """
 
 
-def _build_details(info):
-    rows = []
-    submitter = esc(info.get('submitter', 'Unknown Submitter'))
-    rows.append(f"<div><strong>Submitter</strong>: {submitter}</div>")
-
-    if info.get("coauthors"):
-        coauthors = esc(', '.join(info['coauthors']))
-        rows.append(f"<div><strong>Coauthors</strong>: {coauthors}</div>")
-    if info.get("methodology"):
-        methodology = esc(info['methodology'])
-        rows.append(f"<div><strong>Methodology</strong>: {methodology}</div>")
-    if info.get("technique"):
-        rows.append(f"<div><strong>Technique</strong>: {esc(info['technique'])}</div>")
-    if info.get("data_size"):
-        rows.append(f"<div><strong>Data Size</strong>: {esc(info['data_size'])}</div>")
-
-    return f'<div class="card-details">{"".join(rows)}</div>'
+def _icon_chevron_down():
+    return """
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+    """
 
 
-def _build_metrics_and_refs(info):
-    blocks = []
-
-    impact = []
-    if info.get("active_users"):
-        impact.append(f"{esc(info['active_users'])} Users")
-    if info.get("downloads"):
-        impact.append(f"{esc(info['downloads'])} Downloads")
-    if impact:
-        blocks.append(f'<div><strong>Impact</strong>: {", ".join(impact)}</div>')
-
-    if info.get("funding"):
-        blocks.append(f"<div><strong>Funding</strong>: {esc(info['funding'])}</div>")
-
-    if info.get("publication"):
-        pub = (info.get("publication") or "").strip()
-        if pub:
-            pub_esc = esc(pub)
-            blocks.append(
-                f'<div><strong>Publication</strong>: '
-                f'<a href="{pub_esc}">{pub_esc}</a></div>'
-            )
-
-    if info.get("keywords"):
-        badges = " ".join(
-            [f'<span class="kw-badge">{esc(k)}</span>' for k in info["keywords"]]
-        )
-        blocks.append(
-            f'<div class="card-keywords"><strong>Keywords</strong>: {badges}</div>'
-        )
-
-    return f'<div class="card-metrics">{"".join(blocks)}</div>'
+def _icon_nomad():
+    return '<img src="assets/images/page/favicon.png" alt="NOMAD" aria-hidden="true">'
 
 
-def _build_media_and_links(info):
-    parts = []
-
-    # Image
-    if info.get("image_path"):
-        parts.append(
-            f'<div style="margin-top: 10px;">'
-            f'  <img src="{esc(info["image_path"])}" '
-            f'alt="{esc(info.get("image_name","Image"))}" '
-            f'width="100%">'
-            f"</div>"
-        )
-
-    # Icon-based Links
-    link_items = []
-    if info.get("repo_link"):
-        github_svg = (
-            '<svg viewBox="0 0 16 16" fill="currentColor">'
-            '<path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 '
-            '7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53'
-            '-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01'
-            '-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52'
-            '.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82'
-            '-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 '
-            '1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82'
-            '.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 '
-            '3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 '
-            '0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>'
-            '</svg>'
-        )
-        link_items.append(
-            f'<a href="{esc(info["repo_link"])}" class="icon-link" '
-            f'aria-label="View Repository" target="_blank" '
-            f'rel="noopener">{github_svg}</a>'
-        )
-    if info.get("entry_link"):
-        nomad_fallback = "this.parentElement.innerHTML='🚀'"
-        link_items.append(
-            f'<a href="{esc(info["entry_link"])}" class="icon-link" '
-            f'aria-label="Open in NOMAD" target="_blank" rel="noopener">'
-            f'<img src="assets/nomad-icon.png" alt="NOMAD" '
-            f'onerror="{nomad_fallback}" />'
-            f'</a>'
-        )
-    if info.get("media_url"):
-        link_items.append(
-            f'<a href="{esc(info["media_url"])}" class="icon-link" '
-            f'aria-label="Watch Media" target="_blank" rel="noopener">'
-            f'<span class="emoji-icon">🎥</span>'
-            f'</a>'
-        )
-    if info.get("publication"):
-        link_items.append(
-            f'<a href="{esc(info["publication"])}" class="icon-link" '
-            f'aria-label="View Publication" target="_blank" rel="noopener">'
-            f'<span class="emoji-icon">📄</span>'
-            f'</a>'
-        )
-
-    # Create footer with icons and date
-    if link_items or info.get("submission_date"):
-        footer_html = '<div class="card-icon-links">'
-        if link_items:
-            icons_html = '<div class="card-icons-group">' + "".join(link_items)
-            footer_html += icons_html + '</div>'
-        if info.get("submission_date"):
-            submitted = esc(info.get("submission_date", "") or "")
-            footer_html += (
-                f'<div class="card-submitted-inline">'
-                f'Submitted: {submitted}</div>'
-            )
-        footer_html += '</div>'
-        parts.append(footer_html)
-
-    return parts
+def _icon_document():
+    return """
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+      <polyline points="13 2 13 9 20 9"></polyline>
+      <line x1="8" y1="13" x2="16" y2="13"></line>
+      <line x1="8" y1="17" x2="16" y2="17"></line>
+    </svg>
+    """
 
 
-def build_card_html(info):
-    """Constructs a single card as HTML with data-* attributes for filtering."""
-    keywords_csv = ",".join(info.get("keywords", [])) if info.get("keywords") else ""
-
-    parts = [
-        f'<article class="gallery-card" '
-        f'data-submission-date="{esc(info.get("submission_date",""))}" '
-        f'data-methodology="{esc(info.get("methodology",""))}" '
-        f'data-country="{esc(info.get("country",""))}" '
-        f'data-research-field="{esc(info.get("research_field",""))}" '
-        f'data-keywords="{esc(keywords_csv)}">'
-    ]
-
-    parts.append(_build_header(info))
-    parts.append(_build_details(info))
-    parts.append(_build_metrics_and_refs(info))
-    parts.extend(_build_media_and_links(info))
-
-    parts.append("</article>")
-    return "\n".join(parts)
+def _icon_github():
+    return """
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M12 0C5.373 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.48 11.48 0 0 1 12 6.844c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.799 24 17.302 24 12 24 5.373 18.627 0 12 0z"></path>
+    </svg>
+    """
 
 
-def render_card_from_file(file_path):
-    """Reads front matter from a file and renders a formatted card."""
-    try:
-        with open(f"docs/{file_path}", encoding="utf-8") as f:
-            content = f.read()
-            metadata, _ = content.split("---", 2)[1:]  # Extract front matter
-            data = yaml.safe_load(metadata)  # Parse YAML
-
-        info = extract_metadata(data)
-        return build_card_html(info)
-
-    except Exception as e:
-        return f"**Error loading card from {file_path}: {str(e)}**"
+def _icon_play():
+    return """
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <polygon points="5 3 19 12 5 21 5 3"></polygon>
+    </svg>
+    """
 
 
+def _icon_users():
+    return """
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+      <circle cx="9" cy="7" r="4"></circle>
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+      <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+    </svg>
+    """
+
+
+def _icon_download():
+    return """
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+      <polyline points="7 10 12 15 17 10"></polyline>
+      <line x1="12" y1="15" x2="12" y2="3"></line>
+    </svg>
+    """
 def render_sorted_cards(cards_dir="docs/cards"):
     """Render all cards from the specified directory, sorted by submission date."""
     card_files = []
@@ -292,11 +194,274 @@ def render_sorted_cards(cards_dir="docs/cards"):
     rendered_cards = ""
     docs_dir = Path("docs").resolve()
 
-    for file_path, _ in card_files:
+    for i, (file_path, _) in enumerate(card_files):
         clean_path = str(Path(file_path).resolve().relative_to(docs_dir))
-        rendered_cards += render_card_from_file(clean_path) + "\n"
+        rendered_cards += _render_grid_use_case_card(clean_path, index=i) + "\n"
 
     return rendered_cards
+
+
+def _render_grid_use_case_card(file_path, index=0):
+    """Grid card renderer for the Explore section."""
+    try:
+        data, body = _read_front_matter_from_docs(file_path)
+        info = _normalize_use_case_info(data, body)
+
+        title = esc(info["title"])
+        description = esc(info["description"])
+        institution = esc(info["institution"])
+        country = esc(info["country"])
+        research_field = esc(info["research_field"])
+        methodology = esc(info["methodology"])
+        submitter = esc(info["submitter"])
+        submission_date = esc(info["submission_date"])
+        technique = esc(info["technique"])
+        data_size = esc(info["data_size"])
+        funding = esc(info["funding"])
+        publication = esc(info["publication"])
+        repo_link = esc(info["repo_link"])
+        entry_link = esc(info["entry_link"])
+        dataset_reference = esc(info["dataset_reference"])
+        media_url = esc(info["media_url"])
+        image_path = esc(info["image_path"])
+        image_name = esc(info["image_name"])
+
+        gradient = CARD_GRADIENTS[index % len(CARD_GRADIENTS)]
+        keywords_csv = ",".join(info["keywords"]) if info["keywords"] else ""
+        slug = Path(file_path).stem.lower().replace("_", "-").replace(" ", "-")
+
+        image_html = ""
+        if info["image_path"]:
+            image_html = f'''
+            <div class="grid-use-case-card__hero-image">
+              <img src="{image_path}" alt="{image_name}">
+            </div>
+            '''
+
+        action_buttons = []
+        if info["entry_link"]:
+            action_buttons.append(
+                f'<a class="grid-use-case-card__icon-button" href="{entry_link}" target="_blank" rel="noopener" title="Open in NOMAD">{_icon_nomad()}</a>'
+            )
+        if info["publication"]:
+            action_buttons.append(
+                f'<a class="grid-use-case-card__icon-button" href="{publication}" target="_blank" rel="noopener" title="View Publication">{_icon_document()}</a>'
+            )
+        if info["repo_link"]:
+            action_buttons.append(
+                f'<a class="grid-use-case-card__icon-button" href="{repo_link}" target="_blank" rel="noopener" title="View Repository">{_icon_github()}</a>'
+            )
+        if info["media_url"]:
+            action_buttons.append(
+                f'<a class="grid-use-case-card__icon-button" href="{media_url}" target="_blank" rel="noopener" title="Watch Media">{_icon_play()}</a>'
+            )
+
+        keyword_items = []
+        shown_keywords = info["keywords"][:4]
+        for kw in shown_keywords:
+            keyword_items.append(f'<span class="grid-use-case-card__keyword">#{esc(kw)}</span>')
+        if len(info["keywords"]) > 4:
+            keyword_items.append(
+                f'<span class="grid-use-case-card__keyword-more">+{len(info["keywords"]) - 4}</span>'
+            )
+
+        expanded_keywords = "".join(
+            f'<span class="grid-use-case-card__keyword">#{esc(kw)}</span>'
+            for kw in info["keywords"]
+        )
+
+        stats_html = ""
+        stat_parts = []
+        if info["active_users"]:
+            stat_parts.append(
+                f'<div class="grid-use-case-card__stat">{_icon_users()}<span>{esc(info["active_users"])} active users</span></div>'
+            )
+        if info["downloads"]:
+            stat_parts.append(
+                f'<div class="grid-use-case-card__stat">{_icon_download()}<span>{esc(info["downloads"])} downloads</span></div>'
+            )
+        if stat_parts:
+            stats_html = f'''
+            <div class="grid-use-case-card__detail">
+              <h4>Usage Statistics</h4>
+              <div class="grid-use-case-card__stats">
+                {"".join(stat_parts)}
+              </div>
+            </div>
+            '''
+
+        coauthors_html = ""
+        coauthors = info.get("coauthors", [])
+        if coauthors:
+            coauthors_html = f'''
+            <div class="grid-use-case-card__detail">
+              <h4>Contributors</h4>
+              <p>{esc(", ".join(coauthors))}</p>
+            </div>
+            '''
+
+        left_column = []
+        if info["data_size"]:
+            left_column.append(f'''
+            <div class="grid-use-case-card__detail">
+              <h4>Data Size</h4>
+              <p>{data_size}</p>
+            </div>
+            ''')
+        if info["technique"]:
+            left_column.append(f'''
+            <div class="grid-use-case-card__detail">
+              <h4>Technique</h4>
+              <p>{technique}</p>
+            </div>
+            ''')
+        if stats_html:
+            left_column.append(stats_html)
+        if coauthors_html:
+            left_column.append(coauthors_html)
+
+        right_column = []
+        if info["publication"]:
+            right_column.append(f'''
+            <div class="grid-use-case-card__detail">
+              <h4>Publication Reference</h4>
+              <a href="{publication}" target="_blank" rel="noopener">{publication}</a>
+            </div>
+            ''')
+        if info["repo_link"]:
+            right_column.append(f'''
+            <div class="grid-use-case-card__detail">
+              <h4>Repository Reference</h4>
+              <a href="{repo_link}" target="_blank" rel="noopener">{repo_link}</a>
+            </div>
+            ''')
+        if info["dataset_reference"]:
+            right_column.append(f'''
+            <div class="grid-use-case-card__detail">
+              <h4>Dataset Reference</h4>
+              <a href="{dataset_reference}" target="_blank" rel="noopener">{dataset_reference}</a>
+            </div>
+            ''')
+        if info["funding"]:
+            right_column.append(f'''
+            <div class="grid-use-case-card__detail">
+              <h4>Funding Reference</h4>
+              <p>{funding}</p>
+            </div>
+            ''')
+        if info["media_url"]:
+            right_column.append(f'''
+            <div class="grid-use-case-card__detail">
+              <h4>Media URL</h4>
+              <a href="{media_url}" target="_blank" rel="noopener">{media_url}</a>
+            </div>
+            ''')
+
+        return f'''
+<article class="grid-use-case-card gallery-card"
+  id="grid-card-{slug}"
+  data-submission-date="{submission_date}"
+  data-methodology="{methodology}"
+  data-country="{country}"
+  data-research-field="{research_field}"
+  data-keywords="{esc(keywords_csv)}"
+  style="--grid-card-gradient: {gradient};">
+
+  <div class="grid-use-case-card__hero" style="background: {gradient};">
+    {image_html}
+    <div class="grid-use-case-card__pattern"></div>
+    <div class="grid-use-case-card__shade"></div>
+
+    <div class="grid-use-case-card__hero-actions">
+      {"".join(action_buttons)}
+    </div>
+  </div>
+
+  <div class="grid-use-case-card__hero-content">
+    <p class="grid-use-case-card__title">{title}</p>
+    <div class="grid-use-case-card__institution-line">
+      <span>{institution}</span>
+      <span>•</span>
+      <span>{country}</span>
+    </div>
+  </div>
+
+  <div class="grid-use-case-card__body">
+    <div class="grid-use-case-card__pills">
+      <span class="grid-use-case-card__pill grid-use-case-card__pill--field">{research_field}</span>
+      <span class="grid-use-case-card__pill grid-use-case-card__pill--method">{methodology}</span>
+    </div>
+
+    <p class="grid-use-case-card__description is-collapsed">{description}</p>
+
+    <div class="grid-use-case-card__keywords">
+      {"".join(keyword_items)}
+    </div>
+
+    <div class="grid-use-case-card__meta">
+      <span>By {submitter}</span>
+      <div class="grid-use-case-card__meta-right">
+        {_icon_calendar()}
+        <span>{submission_date}</span>
+      </div>
+    </div>
+
+    <button class="grid-use-case-card__toggle" type="button" aria-expanded="false">
+      <span class="grid-use-case-card__toggle-label">View Details</span>
+      {_icon_chevron_down()}
+    </button>
+  </div>
+
+  <div class="grid-use-case-card__expanded">
+    <div class="grid-use-case-card__expanded-grid">
+      <div class="grid-use-case-card__section">
+        {"".join(left_column)}
+        <div class="grid-use-case-card__detail">
+          <h4>Keywords</h4>
+          <div class="grid-use-case-card__keywords">{expanded_keywords}</div>
+        </div>
+      </div>
+      <div class="grid-use-case-card__section">
+        {"".join(right_column)}
+      </div>
+    </div>
+  </div>
+</article>
+'''
+    except Exception as e:
+        return f"**Error loading grid use case card from {file_path}: {str(e)}**"
+
+def _render_featured_rotator_card(file_path, index=0):
+    """Compact Figma-style thumbnail card for the featured-highlights carousel."""
+    try:
+        data, body = _read_front_matter_from_docs(file_path)
+    except Exception as exc:
+        return f'<div class="featured-rotator-card">Error: {esc(str(exc))}</div>'
+
+    info = _normalize_use_case_info(data, body)
+    gradient = CARD_GRADIENTS[index % len(CARD_GRADIENTS)]
+    title = esc(info["title"])
+    research_field = esc(info["research_field"])
+    image_path = esc(info["image_path"])
+    image_name = esc(info.get("image_name", title))
+
+    image_html = ""
+    if info["image_path"]:
+        image_html = f'<img class="featured-rotator-card__img" src="{image_path}" alt="{image_name}">'
+
+    slug = Path(file_path).stem.lower().replace("_", "-").replace(" ", "-")
+
+    return f'''<div class="featured-rotator-card" data-explore-target="grid-card-{slug}">
+  <div class="featured-rotator-card__hero" style="background: {gradient};">
+    {image_html}
+    <div class="featured-rotator-card__pattern"></div>
+  </div>
+  <div class="featured-rotator-card__body">
+    <p class="featured-rotator-card__title">{title}</p>
+    <span class="featured-rotator-card__field">{research_field}</span>
+    <button class="featured-rotator-card__explore-btn" type="button">View in Gallery</button>
+  </div>
+</div>'''
 
 
 def define_env(env):
@@ -313,9 +478,13 @@ def define_env(env):
             return f"**Error loading file {file_path}: {str(e)}**"
 
     @env.macro
-    def render_card_from_file_macro(file_path):
-        return render_card_from_file(file_path)
-
-    @env.macro
     def render_sorted_cards_macro(cards_dir="docs/cards"):
         return render_sorted_cards(cards_dir)
+
+    @env.macro
+    def render_featured_rotator_card(file_path, index=0):
+        return _render_featured_rotator_card(file_path, index)
+
+    @env.macro
+    def render_grid_use_case_card(file_path, index=0):
+        return _render_grid_use_case_card(file_path, index)

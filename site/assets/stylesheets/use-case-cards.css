@@ -1,0 +1,339 @@
+.use-case-card {
+  --nomad-blue: #2a4cdf;
+  --nomad-blue-dark: #1e3cb8;
+  --text-main: rgba(0, 0, 0, 0.87);
+  --text-soft: rgba(0, 0, 0, 0.75);
+  --text-muted: rgba(0, 0, 0, 0.6);
+  --text-faint: rgba(0, 0, 0, 0.5);
+  --border-soft: rgba(0, 0, 0, 0.08);
+  --border-faint: rgba(0, 0, 0, 0.06);
+  --bg-soft: rgba(42, 76, 223, 0.02);
+  --pill-blue-bg: rgba(42, 76, 223, 0.1);
+  --pill-blue-border: rgba(42, 76, 223, 0.2);
+  --pill-gray-bg: rgba(0, 0, 0, 0.05);
+  --pill-gray-border: rgba(0, 0, 0, 0.1);
+
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.use-case-card:hover {
+  box-shadow: 0 8px 30px 0 rgba(0, 0, 0, 0.12);
+}
+
+.use-case-card.is-expanded {
+  grid-column: span 2;
+}
+
+@media (max-width: 900px) {
+  .use-case-card.is-expanded {
+    grid-column: span 1;
+  }
+}
+
+.use-case-card__hero {
+  position: relative;
+  height: 140px;
+  overflow: hidden;
+  transition: height 0.25s ease;
+  background: linear-gradient(135deg, #a8c8f0 0%, #7baad8 50%, #5a92c6 100%);
+}
+
+.use-case-card.is-expanded .use-case-card__hero {
+  height: 500px;
+}
+
+.use-case-card__pattern {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 30% 40%, rgba(255,255,255,0.2) 0%, transparent 50%),
+    radial-gradient(circle at 70% 70%, rgba(255,255,255,0.15) 0%, transparent 40%);
+}
+
+.use-case-card__shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.4), transparent 55%, transparent);
+}
+
+.use-case-card__hero-image {
+  position: absolute;
+  inset: 0;
+}
+
+.use-case-card__hero-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  opacity: 0.9;
+}
+
+.use-case-card__hero-content {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 16px;
+  z-index: 2;
+}
+
+.use-case-card__title {
+  margin: 0 0 6px;
+  font-family: "Titillium Web", sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 24px;
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.use-case-card__institution-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255,255,255,0.9);
+  font-size: 12px;
+}
+
+.use-case-card__hero-actions {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 6px;
+  z-index: 3;
+}
+
+.use-case-card__icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: 6px;
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+  color: var(--nomad-blue);
+  text-decoration: none;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.use-case-card__icon-button:hover {
+  background: #fff;
+  transform: translateY(-1px);
+}
+
+.use-case-card__icon-button svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+.use-case-card__body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.use-case-card__pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.use-case-card__pill {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.use-case-card__pill--field {
+  background: var(--pill-blue-bg);
+  border: 1px solid var(--pill-blue-border);
+  color: var(--nomad-blue);
+  font-weight: 700;
+}
+
+.use-case-card__pill--method {
+  background: var(--pill-gray-bg);
+  border: 1px solid var(--pill-gray-border);
+  color: rgba(0,0,0,0.7);
+  font-weight: 400;
+}
+
+.use-case-card__description {
+  margin: 0;
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--text-soft);
+}
+
+.use-case-card__description.is-collapsed {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 60px;
+}
+
+.use-case-card__keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.use-case-card__keyword {
+  display: inline-block;
+  background: rgba(0,0,0,0.03);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.use-case-card__keyword-more {
+  align-self: center;
+  padding: 0 4px;
+  font-size: 11px;
+  color: rgba(0,0,0,0.4);
+}
+
+.use-case-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-faint);
+  font-size: 12px;
+  color: var(--text-faint);
+}
+
+.use-case-card__meta-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.use-case-card__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--nomad-blue);
+  color: #fff;
+  border: 0;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  box-shadow: 0 2px 8px rgba(42, 76, 223, 0.2);
+  margin-top: 4px;
+}
+
+.use-case-card__toggle:hover {
+  background: var(--nomad-blue-dark);
+}
+
+.use-case-card__expanded {
+  display: none;
+  border-top: 1px solid var(--border-soft);
+  background: var(--bg-soft);
+  padding: 20px;
+}
+
+.use-case-card.is-expanded .use-case-card__expanded {
+  display: block;
+}
+
+.use-case-card__expanded-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 700px) {
+  .use-case-card__expanded-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .use-case-card__meta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.use-case-card__section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.use-case-card__detail h4 {
+  margin: 0 0 6px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+.use-case-card__detail p,
+.use-case-card__detail a {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(0,0,0,0.7);
+  overflow-wrap: anywhere;
+}
+
+.use-case-card__detail a {
+  color: var(--nomad-blue);
+  text-decoration: none;
+}
+
+.use-case-card__detail a:hover {
+  text-decoration: underline;
+}
+
+.use-case-card__stats {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.use-case-card__stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: rgba(0,0,0,0.7);
+}
+
+.use-case-card__stat svg,
+.use-case-card__meta-right svg,
+.use-case-card__toggle svg {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+}
+
+.use-case-card__meta-right svg {
+  width: 12px;
+  height: 12px;
+}
