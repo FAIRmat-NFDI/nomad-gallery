@@ -5,6 +5,9 @@ from pathlib import Path
 
 import yaml
 
+MIN_FRONT_MATTER_PARTS = 3
+MAX_SHOWN_KEYWORDS = 4
+
 
 def esc(x):
     """HTML-escape any value safely."""
@@ -27,8 +30,8 @@ def _read_front_matter_from_docs(file_path):
     if not content.startswith("---"):
         raise ValueError(f"{file_path} does not start with YAML front matter.")
 
-    parts = content.split("---", 2)
-    if len(parts) < 3:
+    parts = content.split("---", MIN_FRONT_MATTER_PARTS)
+    if len(parts) < MIN_FRONT_MATTER_PARTS:
         raise ValueError(f"{file_path} has invalid YAML front matter.")
 
     metadata = yaml.safe_load(parts[1]) or {}
@@ -53,12 +56,18 @@ def _normalize_use_case_info(data, body=""):
             .replace("/blob/", "/")
         )
 
-    repo_link = (data.get("repo_link") or data.get("repository_reference") or "").strip()
-    entry_link = (data.get("entry_link") or data.get("external_url") or "").strip()
+    repo_link = (
+        data.get("repo_link") or data.get("repository_reference") or ""
+    ).strip()
+    entry_link = (
+        data.get("entry_link") or data.get("external_url") or ""
+    ).strip()
 
     return {
         "title": data.get("title", "Untitled Submission"),
-        "submitter": data.get("submitter") or data.get("submitted_by") or "Unknown Submitter",
+        "submitter": (
+            data.get("submitter") or data.get("submitted_by") or "Unknown Submitter"
+        ),
         "description": data.get("description")
         or data.get("summary")
         or body
@@ -70,7 +79,9 @@ def _normalize_use_case_info(data, body=""):
         "country": (data.get("country", "") or "").strip(),
         "research_field": (data.get("research_field", "") or "").strip(),
         "methodology": (data.get("methodology_type", "") or "").strip(),
-        "technique": (data.get("technique") or data.get("specific_technique") or "").strip(),
+        "technique": (
+            data.get("technique") or data.get("specific_technique") or ""
+        ).strip(),
         "data_size": (data.get("data_size", "") or "").strip(),
         "active_users": data.get("estimated_active_users", None),
         "downloads": data.get("downloads", None),
@@ -89,22 +100,24 @@ def _normalize_use_case_info(data, body=""):
     }
 
 def _icon_calendar():
-    return """
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-      <line x1="16" y1="2" x2="16" y2="6"></line>
-      <line x1="8" y1="2" x2="8" y2="6"></line>
-      <line x1="3" y1="10" x2="21" y2="10"></line>
-    </svg>
-    """
+    return (
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"'
+        ' stroke-width="2" aria-hidden="true">\n'
+        '      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>\n'
+        '      <line x1="16" y1="2" x2="16" y2="6"></line>\n'
+        '      <line x1="8" y1="2" x2="8" y2="6"></line>\n'
+        '      <line x1="3" y1="10" x2="21" y2="10"></line>\n'
+        '    </svg>'
+    )
 
 
 def _icon_chevron_down():
-    return """
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-      <polyline points="6 9 12 15 18 9"></polyline>
-    </svg>
-    """
+    return (
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"'
+        ' stroke-width="2" aria-hidden="true">\n'
+        '      <polyline points="6 9 12 15 18 9"></polyline>\n'
+        '    </svg>'
+    )
 
 
 def _icon_nomad():
@@ -112,22 +125,39 @@ def _icon_nomad():
 
 
 def _icon_document():
-    return """
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-      <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
-      <polyline points="13 2 13 9 20 9"></polyline>
-      <line x1="8" y1="13" x2="16" y2="13"></line>
-      <line x1="8" y1="17" x2="16" y2="17"></line>
-    </svg>
-    """
+    return (
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"'
+        ' stroke-width="2" aria-hidden="true">\n'
+        '      <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12'
+        'a2 2 0 0 0 2-2V9z"></path>\n'
+        '      <polyline points="13 2 13 9 20 9"></polyline>\n'
+        '      <line x1="8" y1="13" x2="16" y2="13"></line>\n'
+        '      <line x1="8" y1="17" x2="16" y2="17"></line>\n'
+        '    </svg>'
+    )
 
 
 def _icon_github():
-    return """
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M12 0C5.373 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.48 11.48 0 0 1 12 6.844c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.799 24 17.302 24 12 24 5.373 18.627 0 12 0z"></path>
-    </svg>
-    """
+    _gh_path = (
+        "M12 0C5.373 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387"
+        ".599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416"
+        "-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745"
+        ".083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07"
+        " 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604"
+        "-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381"
+        " 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322"
+        " 3.301 1.23A11.48 11.48 0 0 1 12 6.844c1.02.005 2.047.138"
+        " 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242"
+        " 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609"
+        "-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293"
+        "c0 .319.192.694.801.576C20.566 21.799 24 17.302 24 12"
+        " 24 5.373 18.627 0 12 0z"
+    )
+    return (
+        '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">\n'
+        f'      <path d="{_gh_path}"></path>\n'
+        '    </svg>'
+    )
 
 
 def _icon_play():
@@ -139,24 +169,26 @@ def _icon_play():
 
 
 def _icon_users():
-    return """
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-      <circle cx="9" cy="7" r="4"></circle>
-      <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-      <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-    </svg>
-    """
+    return (
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"'
+        ' stroke-width="2" aria-hidden="true">\n'
+        '      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>\n'
+        '      <circle cx="9" cy="7" r="4"></circle>\n'
+        '      <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>\n'
+        '      <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>\n'
+        '    </svg>'
+    )
 
 
 def _icon_download():
-    return """
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-      <polyline points="7 10 12 15 17 10"></polyline>
-      <line x1="12" y1="15" x2="12" y2="3"></line>
-    </svg>
-    """
+    return (
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"'
+        ' stroke-width="2" aria-hidden="true">\n'
+        '      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>\n'
+        '      <polyline points="7 10 12 15 17 10"></polyline>\n'
+        '      <line x1="12" y1="15" x2="12" y2="3"></line>\n'
+        '    </svg>'
+    )
 def render_sorted_cards(cards_dir="docs/cards"):
     """Render all cards from the specified directory, sorted by submission date."""
     card_files = []
@@ -201,6 +233,140 @@ def render_sorted_cards(cards_dir="docs/cards"):
     return rendered_cards
 
 
+def _build_action_buttons(info, entry_link, publication, repo_link, media_url):
+    """Build icon-button anchor tags for a grid use-case card."""
+    cls = "grid-use-case-card__icon-button"
+    buttons = []
+    if info["entry_link"]:
+        buttons.append(
+            f'<a class="{cls}" href="{entry_link}"'
+            f' target="_blank" rel="noopener"'
+            f' title="Open in NOMAD">{_icon_nomad()}</a>'
+        )
+    if info["publication"]:
+        buttons.append(
+            f'<a class="{cls}" href="{publication}"'
+            f' target="_blank" rel="noopener"'
+            f' title="View Publication">{_icon_document()}</a>'
+        )
+    if info["repo_link"]:
+        buttons.append(
+            f'<a class="{cls}" href="{repo_link}"'
+            f' target="_blank" rel="noopener"'
+            f' title="View Repository">{_icon_github()}</a>'
+        )
+    if info["media_url"]:
+        buttons.append(
+            f'<a class="{cls}" href="{media_url}"'
+            f' target="_blank" rel="noopener"'
+            f' title="Watch Media">{_icon_play()}</a>'
+        )
+    return buttons
+
+
+def _build_stats_html(info):
+    """Build usage-statistics HTML block for a grid use-case card."""
+    stat_parts = []
+    if info["active_users"]:
+        stat_parts.append(
+            '<div class="grid-use-case-card__stat">'
+            f'{_icon_users()}'
+            f'<span>{esc(info["active_users"])} active users</span>'
+            '</div>'
+        )
+    if info["downloads"]:
+        stat_parts.append(
+            '<div class="grid-use-case-card__stat">'
+            f'{_icon_download()}'
+            f'<span>{esc(info["downloads"])} downloads</span>'
+            '</div>'
+        )
+    if not stat_parts:
+        return ""
+    return f'''
+            <div class="grid-use-case-card__detail">
+              <h4>Usage Statistics</h4>
+              <div class="grid-use-case-card__stats">
+                {"".join(stat_parts)}
+              </div>
+            </div>
+            '''
+
+
+def _build_left_column(info, data_size, technique, stats_html, coauthors_html):
+    """Build the left column detail blocks for a grid use-case card."""
+    col = []
+    if info["data_size"]:
+        col.append(f'''
+            <div class="grid-use-case-card__detail">
+              <h4>Data Size</h4>
+              <p>{data_size}</p>
+            </div>
+            ''')
+    if info["technique"]:
+        col.append(f'''
+            <div class="grid-use-case-card__detail">
+              <h4>Technique</h4>
+              <p>{technique}</p>
+            </div>
+            ''')
+    if stats_html:
+        col.append(stats_html)
+    if coauthors_html:
+        col.append(coauthors_html)
+    return col
+
+
+def _build_right_column(info, escaped):
+    """Build the right column detail blocks for a grid use-case card."""
+    publication = escaped["publication"]
+    repo_link = escaped["repo_link"]
+    dataset_reference = escaped["dataset_reference"]
+    funding = escaped["funding"]
+    media_url = escaped["media_url"]
+    col = []
+    if info["publication"]:
+        col.append(f'''
+            <div class="grid-use-case-card__detail">
+              <h4>Publication Reference</h4>
+              <a href="{publication}" target="_blank"
+                 rel="noopener">{publication}</a>
+            </div>
+            ''')
+    if info["repo_link"]:
+        col.append(f'''
+            <div class="grid-use-case-card__detail">
+              <h4>Repository Reference</h4>
+              <a href="{repo_link}" target="_blank"
+                 rel="noopener">{repo_link}</a>
+            </div>
+            ''')
+    if info["dataset_reference"]:
+        col.append(f'''
+            <div class="grid-use-case-card__detail">
+              <h4>Dataset Reference</h4>
+              <a href="{dataset_reference}" target="_blank"
+                 rel="noopener">{dataset_reference}</a>
+            </div>
+            ''')
+    if info["funding"]:
+        col.append(f'''
+            <div class="grid-use-case-card__detail">
+              <h4>Funding Reference</h4>
+              <p>{funding}</p>
+            </div>
+            ''')
+    if info["media_url"]:
+        col.append(f'''
+            <div class="grid-use-case-card__detail">
+              <h4>Media URL</h4>
+              <a href="{media_url}" target="_blank"
+                 rel="noopener">{media_url}</a>
+            </div>
+            ''')
+    return col
+
+
 def _render_grid_use_case_card(file_path, index=0):
     """Grid card renderer for the Explore section."""
     try:
@@ -238,31 +404,20 @@ def _render_grid_use_case_card(file_path, index=0):
             </div>
             '''
 
-        action_buttons = []
-        if info["entry_link"]:
-            action_buttons.append(
-                f'<a class="grid-use-case-card__icon-button" href="{entry_link}" target="_blank" rel="noopener" title="Open in NOMAD">{_icon_nomad()}</a>'
-            )
-        if info["publication"]:
-            action_buttons.append(
-                f'<a class="grid-use-case-card__icon-button" href="{publication}" target="_blank" rel="noopener" title="View Publication">{_icon_document()}</a>'
-            )
-        if info["repo_link"]:
-            action_buttons.append(
-                f'<a class="grid-use-case-card__icon-button" href="{repo_link}" target="_blank" rel="noopener" title="View Repository">{_icon_github()}</a>'
-            )
-        if info["media_url"]:
-            action_buttons.append(
-                f'<a class="grid-use-case-card__icon-button" href="{media_url}" target="_blank" rel="noopener" title="Watch Media">{_icon_play()}</a>'
-            )
+        action_buttons = _build_action_buttons(
+            info, entry_link, publication, repo_link, media_url
+        )
 
         keyword_items = []
-        shown_keywords = info["keywords"][:4]
+        shown_keywords = info["keywords"][:MAX_SHOWN_KEYWORDS]
         for kw in shown_keywords:
-            keyword_items.append(f'<span class="grid-use-case-card__keyword">#{esc(kw)}</span>')
-        if len(info["keywords"]) > 4:
             keyword_items.append(
-                f'<span class="grid-use-case-card__keyword-more">+{len(info["keywords"]) - 4}</span>'
+                f'<span class="grid-use-case-card__keyword">#{esc(kw)}</span>'
+            )
+        if len(info["keywords"]) > MAX_SHOWN_KEYWORDS:
+            extra = len(info["keywords"]) - MAX_SHOWN_KEYWORDS
+            keyword_items.append(
+                f'<span class="grid-use-case-card__keyword-more">+{extra}</span>'
             )
 
         expanded_keywords = "".join(
@@ -270,25 +425,7 @@ def _render_grid_use_case_card(file_path, index=0):
             for kw in info["keywords"]
         )
 
-        stats_html = ""
-        stat_parts = []
-        if info["active_users"]:
-            stat_parts.append(
-                f'<div class="grid-use-case-card__stat">{_icon_users()}<span>{esc(info["active_users"])} active users</span></div>'
-            )
-        if info["downloads"]:
-            stat_parts.append(
-                f'<div class="grid-use-case-card__stat">{_icon_download()}<span>{esc(info["downloads"])} downloads</span></div>'
-            )
-        if stat_parts:
-            stats_html = f'''
-            <div class="grid-use-case-card__detail">
-              <h4>Usage Statistics</h4>
-              <div class="grid-use-case-card__stats">
-                {"".join(stat_parts)}
-              </div>
-            </div>
-            '''
+        stats_html = _build_stats_html(info)
 
         coauthors_html = ""
         coauthors = info.get("coauthors", [])
@@ -300,62 +437,17 @@ def _render_grid_use_case_card(file_path, index=0):
             </div>
             '''
 
-        left_column = []
-        if info["data_size"]:
-            left_column.append(f'''
-            <div class="grid-use-case-card__detail">
-              <h4>Data Size</h4>
-              <p>{data_size}</p>
-            </div>
-            ''')
-        if info["technique"]:
-            left_column.append(f'''
-            <div class="grid-use-case-card__detail">
-              <h4>Technique</h4>
-              <p>{technique}</p>
-            </div>
-            ''')
-        if stats_html:
-            left_column.append(stats_html)
-        if coauthors_html:
-            left_column.append(coauthors_html)
-
-        right_column = []
-        if info["publication"]:
-            right_column.append(f'''
-            <div class="grid-use-case-card__detail">
-              <h4>Publication Reference</h4>
-              <a href="{publication}" target="_blank" rel="noopener">{publication}</a>
-            </div>
-            ''')
-        if info["repo_link"]:
-            right_column.append(f'''
-            <div class="grid-use-case-card__detail">
-              <h4>Repository Reference</h4>
-              <a href="{repo_link}" target="_blank" rel="noopener">{repo_link}</a>
-            </div>
-            ''')
-        if info["dataset_reference"]:
-            right_column.append(f'''
-            <div class="grid-use-case-card__detail">
-              <h4>Dataset Reference</h4>
-              <a href="{dataset_reference}" target="_blank" rel="noopener">{dataset_reference}</a>
-            </div>
-            ''')
-        if info["funding"]:
-            right_column.append(f'''
-            <div class="grid-use-case-card__detail">
-              <h4>Funding Reference</h4>
-              <p>{funding}</p>
-            </div>
-            ''')
-        if info["media_url"]:
-            right_column.append(f'''
-            <div class="grid-use-case-card__detail">
-              <h4>Media URL</h4>
-              <a href="{media_url}" target="_blank" rel="noopener">{media_url}</a>
-            </div>
-            ''')
+        left_column = _build_left_column(
+            info, data_size, technique, stats_html, coauthors_html
+        )
+        escaped_vals = {
+            "publication": publication,
+            "repo_link": repo_link,
+            "dataset_reference": dataset_reference,
+            "funding": funding,
+            "media_url": media_url,
+        }
+        right_column = _build_right_column(info, escaped_vals)
 
         return f'''
 <article class="grid-use-case-card gallery-card"
@@ -388,8 +480,10 @@ def _render_grid_use_case_card(file_path, index=0):
 
   <div class="grid-use-case-card__body">
     <div class="grid-use-case-card__pills">
-      <span class="grid-use-case-card__pill grid-use-case-card__pill--field">{research_field}</span>
-      <span class="grid-use-case-card__pill grid-use-case-card__pill--method">{methodology}</span>
+      <span class="grid-use-case-card__pill
+            grid-use-case-card__pill--field">{research_field}</span>
+      <span class="grid-use-case-card__pill
+            grid-use-case-card__pill--method">{methodology}</span>
     </div>
 
     <p class="grid-use-case-card__description is-collapsed">{description}</p>
@@ -447,21 +541,29 @@ def _render_featured_rotator_card(file_path, index=0):
 
     image_html = ""
     if info["image_path"]:
-        image_html = f'<img class="featured-rotator-card__img" src="{image_path}" alt="{image_name}">'
+        image_html = (
+            f'<img class="featured-rotator-card__img"'
+            f' src="{image_path}" alt="{image_name}">'
+        )
 
     slug = Path(file_path).stem.lower().replace("_", "-").replace(" ", "-")
 
-    return f'''<div class="featured-rotator-card" data-explore-target="grid-card-{slug}">
-  <div class="featured-rotator-card__hero" style="background: {gradient};">
-    {image_html}
-    <div class="featured-rotator-card__pattern"></div>
-  </div>
-  <div class="featured-rotator-card__body">
-    <p class="featured-rotator-card__title">{title}</p>
-    <span class="featured-rotator-card__field">{research_field}</span>
-    <button class="featured-rotator-card__explore-btn" type="button">View in Gallery</button>
-  </div>
-</div>'''
+    return (
+        f'<div class="featured-rotator-card"'
+        f' data-explore-target="grid-card-{slug}">\n'
+        f'  <div class="featured-rotator-card__hero"'
+        f' style="background: {gradient};">\n'
+        f'    {image_html}\n'
+        f'    <div class="featured-rotator-card__pattern"></div>\n'
+        f'  </div>\n'
+        f'  <div class="featured-rotator-card__body">\n'
+        f'    <p class="featured-rotator-card__title">{title}</p>\n'
+        f'    <span class="featured-rotator-card__field">{research_field}</span>\n'
+        '    <button class="featured-rotator-card__explore-btn"'
+        ' type="button">View in Gallery</button>\n'
+        f'  </div>\n'
+        f'</div>'
+    )
 
 
 def define_env(env):
