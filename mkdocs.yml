@@ -1,22 +1,13 @@
 site_name: NOMAD Gallery
 site_description: A mkdocs-based GitHub Pages site for showcasing NOMAD features, examples, and use cases.
-site_author: Joseph Rudzinski
+site_author: Berfin Güne, Haoyu Yang, Joseph Rudzinski, Ahmed E. Mansour
 
 repo_url: https://github.com/FAIRmat-NFDI/nomad-gallery
 edit_uri: ""
 
 nav:
-  - Highlights: index.md
-  - Explore: explore.md
+  - Explore: index.md
   - Submit: submissions.md
-  # - Tutorial: tutorial/tutorial.md
-  # - How-to guides:
-  #     - Install this Plugin: how_to/install_this_plugin.md
-  #     - Use this Plugin: how_to/use_this_plugin.md
-  #     - Contribute to this plugin: how_to/contribute_to_this_plugin.md
-  #     - Contribute to the documentation: how_to/contribute_to_the_documentation.md
-  # - Explanation: explanation/explanation.md
-  # - Reference: reference/references.md
 plugins:
   - search
   - macros
@@ -29,7 +20,6 @@ theme:
     text: "Titillium Web"
   favicon: assets/favicon.png
   features:
-    - navigation.instant
     - content.tabs.link
   custom_dir: docs/theme
   icon:
@@ -58,6 +48,7 @@ extra:
 use_directory_urls: false
 extra_css:
   - stylesheets/extra.css
+
 extra_javascript:
   - javascript.js
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js

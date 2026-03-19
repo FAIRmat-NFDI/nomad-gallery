@@ -1,0 +1,8 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^cmd /c \"dir C:\\\\Users\\\\Fair-04\\\\AM_git_projects\\\\nomad-gallery\\\\docs\\\\assets /s /b 2>&1\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}

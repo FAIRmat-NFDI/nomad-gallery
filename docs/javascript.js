@@ -1,48 +1,34 @@
+/* =========================================================
+   ZIP-style gallery filter
+   ========================================================= */
 (function () {
-  function initGalleryUI() {
+  function initZipStyleGalleryFilter() {
     const container = document.getElementById("galleryCards");
-    if (!container) return;
+    const filterRoot = document.getElementById("galleryFilter");
 
-    // Prevent double-binding when Material re-renders pages (navigation.instant)
-    if (container.dataset.galleryInit === "true") return;
-    container.dataset.galleryInit = "true";
+    if (!container || !filterRoot) return;
+    if (filterRoot.dataset.galleryInit === "true") return;
+    filterRoot.dataset.galleryInit = "true";
 
-    // --- Tabs / panels ---
-    const tabs = Array.from(document.querySelectorAll(".filter-tab"));
-    const panels = Array.from(document.querySelectorAll(".filter-panel"));
+    const chips = Array.from(filterRoot.querySelectorAll(".gallery-filter__chip"));
+    const controlRow = document.getElementById("galleryFilterControlRow");
+    const clearBtn = document.getElementById("clearGalleryFilters");
+    const sortBtn = document.getElementById("sortGallery");
+    const countEl = document.getElementById("galleryResultsCount");
+    const keywordDatalist = document.getElementById("galleryKeywordSuggestions");
 
-    function openPanel(panelId) {
-      for (const tab of tabs) {
-        const isTarget = tab.getAttribute("data-panel") === panelId;
-        tab.classList.toggle("is-active", isTarget);
-        tab.setAttribute("aria-expanded", isTarget ? "true" : "false");
-      }
-      for (const panel of panels) {
-        const isOpen = panel.id === panelId;
-        panel.classList.toggle("is-open", isOpen);
-      }
-    }
+    let activeFilter = "methodology";
+    let sortOrder = "desc"; // desc = newest first
 
-    tabs.forEach((tab) => {
-      tab.addEventListener("click", () => openPanel(tab.getAttribute("data-panel")));
-    });
-
-    // --- Controls ---
-    const els = {
-      methodology: document.getElementById("filterMethodology"),
-      country: document.getElementById("filterCountry"),
-      field: document.getElementById("filterField"),
-      keyword: document.getElementById("filterKeyword"),
-      sort: document.getElementById("sortGallery"),
-      clear: document.getElementById("clearGalleryFilters"),
-      count: document.getElementById("galleryResultsCount"),
-      keywordDatalist: document.getElementById("keywordSuggestions"),
-      fieldDatalist: document.getElementById("fieldSuggestions"),
-      countryDatalist: document.getElementById("countrySuggestions"),
+    const state = {
+      methodology: "All",
+      field: "All",
+      country: "All",
+      keywords: ""
     };
 
-    function norm(v) {
-      return (v || "").toString().trim().toLowerCase();
+    function norm(value) {
+      return (value || "").toString().trim().toLowerCase();
     }
 
     function getCards() {
@@ -50,100 +36,194 @@
     }
 
     function parseDate(card) {
-      const s = card.getAttribute("data-submission-date") || "";
-      const t = Date.parse(s);
-      return Number.isFinite(t) ? t : 0;
+      const raw = card.getAttribute("data-submission-date") || "";
+      const ts = Date.parse(raw);
+      return Number.isFinite(ts) ? ts : 0;
     }
 
-    function buildSuggestions() {
+    function uniqueSorted(values) {
+      return Array.from(new Set(values.filter(Boolean))).sort((a, b) => a.localeCompare(b));
+    }
+
+    function getOptionsFromCards() {
       const cards = getCards();
 
-      // Build keyword suggestions
-      if (els.keywordDatalist) {
-        const keywordSet = new Set();
-        for (const card of cards) {
-          const raw = (card.dataset.keywords || "").split(",");
-          for (const k of raw) {
-            const cleaned = (k || "").trim();
-            if (cleaned) keywordSet.add(cleaned);
+      const methodologies = uniqueSorted(
+        cards.map((card) => (card.dataset.methodology || "").trim())
+      );
+
+      const fields = uniqueSorted(
+        cards.map((card) => (card.dataset.researchField || "").trim())
+      );
+
+      const countries = uniqueSorted(
+        cards.map((card) => (card.dataset.country || "").trim())
+      );
+
+      const keywords = uniqueSorted(
+        cards.flatMap((card) =>
+          (card.dataset.keywords || "")
+            .split(",")
+            .map((k) => k.trim())
+            .filter(Boolean)
+        )
+      );
+
+      return { methodologies, fields, countries, keywords };
+    }
+
+    function buildKeywordSuggestions() {
+      if (!keywordDatalist) return;
+      const { keywords } = getOptionsFromCards();
+      keywordDatalist.innerHTML = keywords
+        .map((k) => `<option value="${k.replace(/"/g, "&quot;")}"></option>`)
+        .join("");
+    }
+
+    function renderSelect(options, value, labelText, onChange) {
+      const wrapper = document.createElement("div");
+      wrapper.className = "gallery-filter__control";
+
+      const label = document.createElement("label");
+      label.className = "gallery-filter__label";
+      label.textContent = labelText;
+
+      const select = document.createElement("select");
+      select.className = "gallery-filter__input";
+      select.innerHTML = [
+        `<option value="All">All</option>`,
+        ...options.map(
+          (option) => `<option value="${option.replace(/"/g, "&quot;")}">${option}</option>`
+        )
+      ].join("");
+
+      select.value = value;
+      select.addEventListener("change", onChange);
+
+      wrapper.appendChild(label);
+      wrapper.appendChild(select);
+      return wrapper;
+    }
+
+    function renderKeywordInput(value, onInput) {
+      const wrapper = document.createElement("div");
+      wrapper.className = "gallery-filter__control";
+
+      const label = document.createElement("label");
+      label.className = "gallery-filter__label";
+      label.textContent = "Search keywords";
+
+      const input = document.createElement("input");
+      input.className = "gallery-filter__input";
+      input.type = "text";
+      input.placeholder = "e.g., NeXus, perovskite, DFT...";
+      input.value = value;
+      input.setAttribute("list", "galleryKeywordSuggestions");
+      input.addEventListener("input", onInput);
+
+      wrapper.appendChild(label);
+      wrapper.appendChild(input);
+      return wrapper;
+    }
+
+    function renderControlRow() {
+      if (!controlRow) return;
+
+      const { methodologies, fields, countries } = getOptionsFromCards();
+      controlRow.innerHTML = "";
+
+      let control;
+
+      if (activeFilter === "methodology") {
+        control = renderSelect(
+          methodologies,
+          state.methodology,
+          "Select methodology",
+          (e) => {
+            state.methodology = e.target.value;
+            refresh();
           }
-        }
-        const sortedKeywords = Array.from(keywordSet).sort((a, b) => a.localeCompare(b));
-        els.keywordDatalist.innerHTML = sortedKeywords
-          .map((k) => `<option value="${k.replace(/"/g, "&quot;")}"></option>`)
-          .join("");
+        );
+      } else if (activeFilter === "field") {
+        control = renderSelect(
+          fields,
+          state.field,
+          "Select research field",
+          (e) => {
+            state.field = e.target.value;
+            refresh();
+          }
+        );
+      } else if (activeFilter === "country") {
+        control = renderSelect(
+          countries,
+          state.country,
+          "Select country",
+          (e) => {
+            state.country = e.target.value;
+            refresh();
+          }
+        );
+      } else {
+        control = renderKeywordInput(state.keywords, (e) => {
+          state.keywords = e.target.value;
+          refresh();
+        });
       }
 
-      // Build research field suggestions
-      if (els.fieldDatalist) {
-        const fieldSet = new Set();
-        for (const card of cards) {
-          const field = (card.dataset.researchField || "").trim();
-          if (field) fieldSet.add(field);
-        }
-        const sortedFields = Array.from(fieldSet).sort((a, b) => a.localeCompare(b));
-        els.fieldDatalist.innerHTML = sortedFields
-          .map((f) => `<option value="${f.replace(/"/g, "&quot;")}"></option>`)
-          .join("");
-      }
-
-      // Build country suggestions
-      if (els.countryDatalist) {
-        const countrySet = new Set();
-        for (const card of cards) {
-          const country = (card.dataset.country || "").trim();
-          if (country) countrySet.add(country);
-        }
-        const sortedCountries = Array.from(countrySet).sort((a, b) => a.localeCompare(b));
-        els.countryDatalist.innerHTML = sortedCountries
-          .map((c) => `<option value="${c.replace(/"/g, "&quot;")}"></option>`)
-          .join("");
-      }
+      controlRow.appendChild(control);
     }
 
     function matches(card) {
-      const selectedMethod = norm(els.methodology?.value);
-      const queryCountry = norm(els.country?.value);
-      const queryField = norm(els.field?.value);
-      const queryKeyword = norm(els.keyword?.value);
-
-      const method = norm(card.dataset.methodology);
+      const methodology = norm(card.dataset.methodology);
+      const field = norm(card.dataset.researchField);
       const country = norm(card.dataset.country);
-      const field = norm(card.dataset.researchField); // data-research-field -> researchField
-      const keywords = norm(card.dataset.keywords); // "a,b,c"
+      const keywords = norm(card.dataset.keywords);
 
-      if (selectedMethod && method !== selectedMethod) return false;
-      if (queryCountry && !country.includes(queryCountry)) return false;
-      if (queryField && !field.includes(queryField)) return false;
-      if (queryKeyword && !keywords.includes(queryKeyword)) return false;
+      if (state.methodology !== "All" && methodology !== norm(state.methodology)) {
+        return false;
+      }
+
+      if (state.field !== "All" && field !== norm(state.field)) {
+        return false;
+      }
+
+      if (state.country !== "All" && country !== norm(state.country)) {
+        return false;
+      }
+
+      if (state.keywords && !keywords.includes(norm(state.keywords))) {
+        return false;
+      }
 
       return true;
     }
 
     function applySort() {
-      const order = els.sort?.value || "desc";
       const cards = getCards();
 
       cards.sort((a, b) => {
         const da = parseDate(a);
         const db = parseDate(b);
-        return order === "asc" ? (da - db) : (db - da);
+        return sortOrder === "asc" ? da - db : db - da;
       });
 
-      for (const card of cards) container.appendChild(card);
+      cards.forEach((card) => container.appendChild(card));
     }
 
     function applyFilters() {
       const cards = getCards();
-      let shown = 0;
+      let visible = 0;
 
-      for (const card of cards) {
-        const ok = matches(card);
-        card.style.display = ok ? "" : "none";
-        if (ok) shown++;
+      cards.forEach((card) => {
+        const show = matches(card);
+        card.style.display = show ? "" : "none";
+        if (show) visible += 1;
+      });
+
+      if (countEl) {
+        countEl.textContent = `${visible} of ${cards.length}`;
       }
-
-      if (els.count) els.count.textContent = `${shown} of ${cards.length} use cases shown`;
     }
 
     function refresh() {
@@ -151,166 +231,159 @@
       applyFilters();
     }
 
+    function setActiveChip(filterName) {
+      activeFilter = filterName;
+
+      chips.forEach((chip) => {
+        chip.classList.toggle("is-active", chip.dataset.filter === filterName);
+      });
+
+      renderControlRow();
+    }
+
     function clearAll() {
-      if (els.methodology) els.methodology.value = "";
-      if (els.country) els.country.value = "";
-      if (els.field) els.field.value = "";
-      if (els.keyword) els.keyword.value = "";
-      if (els.sort) els.sort.value = "desc";
+      state.methodology = "All";
+      state.field = "All";
+      state.country = "All";
+      state.keywords = "";
+      sortOrder = "desc";
+
+      if (sortBtn) sortBtn.textContent = "Sort: Newest";
+
+      renderControlRow();
       refresh();
     }
 
-    // Bind events
-    els.methodology?.addEventListener("change", refresh);
-    els.country?.addEventListener("input", refresh);
-    els.field?.addEventListener("input", refresh);
-    els.keyword?.addEventListener("input", refresh);
-    els.sort?.addEventListener("change", refresh);
-    els.clear?.addEventListener("click", clearAll);
+    chips.forEach((chip) => {
+      chip.addEventListener("click", () => {
+        setActiveChip(chip.dataset.filter || "methodology");
+      });
+    });
 
-    // Default panel open + initial run
-    openPanel("panel-methodology");
-    buildSuggestions();
+    sortBtn?.addEventListener("click", () => {
+      sortOrder = sortOrder === "desc" ? "asc" : "desc";
+      sortBtn.textContent = sortOrder === "desc" ? "Sort: Newest" : "Sort: Oldest";
+      refresh();
+    });
+
+    clearBtn?.addEventListener("click", clearAll);
+
+    buildKeywordSuggestions();
+    setActiveChip("methodology");
     refresh();
   }
 
-  // MkDocs Material (navigation.instant) support
   if (typeof window.document$ !== "undefined" && window.document$?.subscribe) {
     window.document$.subscribe(() => {
-      initGalleryUI();
+      initZipStyleGalleryFilter();
     });
   }
-  // Always attach DOMContentLoaded as fallback
-  if (document.readyState === 'loading') {
-    document.addEventListener("DOMContentLoaded", initGalleryUI);
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initZipStyleGalleryFilter);
   } else {
-    // DOM already loaded
-    initGalleryUI();
+    initZipStyleGalleryFilter();
   }
 })();
 
-
 /* =========================================================
-   Featured highlights rotator (NOMAD Gallery)
+   Featured rotator (track-based version)
    ========================================================= */
 (function () {
-  function initRotators() {
+  function initFeaturedRotators() {
     document.querySelectorAll(".featured-rotator").forEach((rotator) => {
-      // Prevent double-binding when Material re-renders pages (navigation.instant)
       if (rotator.dataset.rotatorInit === "true") return;
       rotator.dataset.rotatorInit = "true";
 
-      const slides = Array.from(rotator.querySelectorAll(".featured-rotator__slide"));
+      const template = rotator.querySelector(".featured-rotator__slides-template");
+      const track = rotator.querySelector(".featured-rotator__track");
+      const prevButton = rotator.querySelector(".featured-rotator__arrow--prev");
+      const nextButton = rotator.querySelector(".featured-rotator__arrow--next");
+      const dots = Array.from(rotator.querySelectorAll(".featured-rotator__dot"));
 
-      if (slides.length <= 1) {
-        if (slides[0]) slides[0].classList.add("is-active");
-        return;
-      }
+      if (!template || !track) return;
 
-      const rotateMs = Number(rotator.dataset.rotateMs || 6000);
+      const sourceSlides = Array.from(
+        template.content.querySelectorAll(".featured-rotator__slide-source")
+      );
+
+      if (!sourceSlides.length) return;
+
+      let activeIndex = 0;
+      const total = sourceSlides.length;
+      const rotateMs = parseInt(rotator.dataset.rotateMs || "5000", 10);
       const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-      let index = 0;
-      slides.forEach((s) => s.classList.remove("is-active"));
-      slides[0].classList.add("is-active");
+      let intervalId = null;
 
-      let timer = null;
+      const normalizeIndex = (index) => ((index % total) + total) % total;
 
-      // Create navigation controls
-      const controlsDiv = document.createElement("div");
-      controlsDiv.className = "rotator-controls";
-      controlsDiv.setAttribute("role", "group");
-      controlsDiv.setAttribute("aria-label", "Carousel controls");
+      const buildCard = (index, className) => {
+        const item = document.createElement("div");
+        item.className = `featured-rotator__item ${className}`;
+        item.innerHTML = sourceSlides[normalizeIndex(index)].innerHTML;
+        return item;
+      };
 
-      // Previous button
-      const prevBtn = document.createElement("button");
-      prevBtn.className = "rotator-btn";
-      prevBtn.innerHTML = "‹";
-      prevBtn.setAttribute("aria-label", "Previous slide");
-      prevBtn.type = "button";
+      const render = () => {
+        track.innerHTML = "";
 
-      // Dots container
-      const dotsDiv = document.createElement("div");
-      dotsDiv.className = "rotator-dots";
-      dotsDiv.setAttribute("role", "tablist");
-      dotsDiv.setAttribute("aria-label", "Slide indicators");
+        const prevIndex = normalizeIndex(activeIndex - 1);
+        const nextIndex = normalizeIndex(activeIndex + 1);
 
-      const dots = [];
-      for (let i = 0; i < slides.length; i++) {
-        const dot = document.createElement("button");
-        dot.className = "rotator-dot";
-        dot.setAttribute("role", "tab");
-        dot.setAttribute("aria-label", `Go to slide ${i + 1}`);
-        dot.setAttribute("aria-selected", i === 0 ? "true" : "false");
-        dot.type = "button";
-        if (i === 0) dot.classList.add("is-active");
-        dots.push(dot);
-        dotsDiv.appendChild(dot);
-      }
+        track.appendChild(buildCard(prevIndex, "is-prev"));
+        track.appendChild(buildCard(activeIndex, "is-active"));
+        track.appendChild(buildCard(nextIndex, "is-next"));
 
-      // Next button
-      const nextBtn = document.createElement("button");
-      nextBtn.className = "rotator-btn";
-      nextBtn.innerHTML = "›";
-      nextBtn.setAttribute("aria-label", "Next slide");
-      nextBtn.type = "button";
-
-      controlsDiv.appendChild(prevBtn);
-      controlsDiv.appendChild(dotsDiv);
-      controlsDiv.appendChild(nextBtn);
-      rotator.appendChild(controlsDiv);
-
-      function goToSlide(newIndex) {
-        if (newIndex === index) return;
-        
-        slides[index].classList.remove("is-active");
-        dots[index].classList.remove("is-active");
-        dots[index].setAttribute("aria-selected", "false");
-        
-        index = newIndex;
-        
-        slides[index].classList.add("is-active");
-        dots[index].classList.add("is-active");
-        dots[index].setAttribute("aria-selected", "true");
-        
-        stop();
-        start();
-      }
-
-      const start = () => {
-        if (reduceMotion) return;
-        timer = window.setInterval(() => {
-          slides[index].classList.remove("is-active");
-          dots[index].classList.remove("is-active");
-          dots[index].setAttribute("aria-selected", "false");
-          
-          index = (index + 1) % slides.length;
-          
-          slides[index].classList.add("is-active");
-          dots[index].classList.add("is-active");
-          dots[index].setAttribute("aria-selected", "true");
-        }, rotateMs);
+        dots.forEach((dot, index) => {
+          const isActive = index === activeIndex;
+          dot.classList.toggle("is-active", isActive);
+          dot.setAttribute("aria-selected", isActive ? "true" : "false");
+        });
       };
 
       const stop = () => {
-        if (timer) window.clearInterval(timer);
-        timer = null;
+        if (intervalId) {
+          clearInterval(intervalId);
+          intervalId = null;
+        }
       };
 
-      // Button event handlers
-      prevBtn.addEventListener("click", () => {
-        const newIndex = (index - 1 + slides.length) % slides.length;
-        goToSlide(newIndex);
-      });
+      const start = () => {
+        if (reduceMotion) return;
+        stop();
+        intervalId = setInterval(() => {
+          activeIndex = normalizeIndex(activeIndex + 1);
+          render();
+        }, rotateMs);
+      };
 
-      nextBtn.addEventListener("click", () => {
-        const newIndex = (index + 1) % slides.length;
-        goToSlide(newIndex);
-      });
+      const restart = () => {
+        stop();
+        start();
+      };
 
-      // Dot event handlers
-      dots.forEach((dot, i) => {
-        dot.addEventListener("click", () => goToSlide(i));
+      const goNext = () => {
+        activeIndex = normalizeIndex(activeIndex + 1);
+        render();
+        restart();
+      };
+
+      const goPrev = () => {
+        activeIndex = normalizeIndex(activeIndex - 1);
+        render();
+        restart();
+      };
+
+      prevButton?.addEventListener("click", goPrev);
+      nextButton?.addEventListener("click", goNext);
+
+      dots.forEach((dot, index) => {
+        dot.addEventListener("click", () => {
+          activeIndex = index;
+          render();
+          restart();
+        });
       });
 
       rotator.addEventListener("mouseenter", stop);
@@ -318,21 +391,158 @@
       rotator.addEventListener("focusin", stop);
       rotator.addEventListener("focusout", start);
 
+      // Delegated click for "View in Gallery" buttons inside the track
+      track.addEventListener("click", (e) => {
+        const btn = e.target.closest(".featured-rotator-card__explore-btn");
+        if (!btn) return;
+
+        const card = btn.closest("[data-explore-target]");
+        if (!card) return;
+
+        const targetCard = document.getElementById(card.dataset.exploreTarget);
+        if (!targetCard) return;
+
+        // Expand via the toggle button (reuses all existing expand logic)
+        if (!targetCard.classList.contains("is-expanded")) {
+          const toggleBtn = targetCard.querySelector(".grid-use-case-card__toggle");
+          if (toggleBtn) toggleBtn.click();
+        }
+
+        // Scroll to card after layout settles
+        requestAnimationFrame(() => {
+          targetCard.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      });
+
+      render();
       start();
     });
   }
 
-  // MkDocs Material (navigation.instant) support
   if (typeof window.document$ !== "undefined" && window.document$?.subscribe) {
     window.document$.subscribe(() => {
-      initRotators();
+      initFeaturedRotators();
     });
   }
-  // Always attach DOMContentLoaded as fallback
-  if (document.readyState === 'loading') {
-    document.addEventListener("DOMContentLoaded", initRotators);
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initFeaturedRotators);
   } else {
-    // DOM already loaded
-    initRotators();
+    initFeaturedRotators();
+  }
+})();
+
+
+/* =========================================================
+   Explore grid cards
+   ========================================================= */
+(function () {
+  function initGridUseCaseCards() {
+    document.querySelectorAll(".grid-use-case-card").forEach((card) => {
+      if (card.dataset.gridCardInit === "true") return;
+      card.dataset.gridCardInit = "true";
+
+      const button = card.querySelector(".grid-use-case-card__toggle");
+      if (!button) return;
+
+      button.addEventListener("click", () => {
+        const grid = card.parentElement;
+        const expanded = card.classList.toggle("is-expanded");
+        button.setAttribute("aria-expanded", expanded ? "true" : "false");
+
+        // Collapse every other expanded card in the same grid
+        if (expanded) {
+          grid.querySelectorAll(".grid-use-case-card.is-expanded").forEach((other) => {
+            if (other === card) return;
+            other.classList.remove("is-expanded");
+            const otherBtn = other.querySelector(".grid-use-case-card__toggle");
+            if (otherBtn) {
+              otherBtn.setAttribute("aria-expanded", "false");
+              const otherLabel = otherBtn.querySelector(".grid-use-case-card__toggle-label");
+              if (otherLabel) otherLabel.textContent = "View Details";
+            }
+            const otherDesc = other.querySelector(".grid-use-case-card__description");
+            if (otherDesc) otherDesc.classList.add("is-collapsed");
+            const otherKwRow = other.querySelector(".grid-use-case-card__body .grid-use-case-card__keywords");
+            if (otherKwRow) {
+              Array.from(otherKwRow.children).forEach((el, i) => {
+                if (el.classList.contains("grid-use-case-card__keyword-more")) {
+                  el.style.display = "";
+                } else if (i >= 4) {
+                  el.style.display = "none";
+                }
+              });
+            }
+            // Restore DOM position if it was swapped
+            if (other._origNextSibling !== undefined && other._origNextSibling !== null) {
+              grid.insertBefore(other, other._origNextSibling);
+            } else if (other._origNextSibling === null) {
+              grid.appendChild(other);
+            }
+            other._origNextSibling = undefined;
+          });
+        }
+
+        if (expanded) {
+          // Remember the node that comes after this card so we can restore later
+          card._origNextSibling = card.nextElementSibling;
+          // If this card is in the right column (odd DOM index), move it before
+          // its left-column neighbor so grid-column: 1/-1 expands in-place
+          const siblings = Array.from(grid.children);
+          const idx = siblings.indexOf(card);
+          if (idx % 2 === 1) {
+            grid.insertBefore(card, siblings[idx - 1]);
+          }
+        } else {
+          // Restore original DOM position
+          if (card._origNextSibling) {
+            grid.insertBefore(card, card._origNextSibling);
+          } else {
+            grid.appendChild(card);
+          }
+          card._origNextSibling = null;
+        }
+
+        // Scroll the top of the card to the top of the viewport
+        if (expanded) {
+          requestAnimationFrame(() => {
+            card.scrollIntoView({ behavior: "smooth", block: "start" });
+          });
+        }
+
+        const label = button.querySelector(".grid-use-case-card__toggle-label");
+        if (label) {
+          label.textContent = expanded ? "Show Less" : "View Details";
+        }
+
+        // Uncollapse / recollapse description
+        const desc = card.querySelector(".grid-use-case-card__description");
+        if (desc) desc.classList.toggle("is-collapsed", !expanded);
+
+        // Show all keywords when expanded, hide extras when collapsed
+        const kwRow = card.querySelector(".grid-use-case-card__body .grid-use-case-card__keywords");
+        if (kwRow) {
+          Array.from(kwRow.children).forEach((el, i) => {
+            if (el.classList.contains("grid-use-case-card__keyword-more")) {
+              el.style.display = expanded ? "none" : "";
+            } else if (i >= 4) {
+              el.style.display = expanded ? "" : "none";
+            }
+          });
+        }
+      });
+    });
+  }
+
+  if (typeof window.document$ !== "undefined" && window.document$?.subscribe) {
+    window.document$.subscribe(() => {
+      initGridUseCaseCards();
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initGridUseCaseCards);
+  } else {
+    initGridUseCaseCards();
   }
 })();

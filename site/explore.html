@@ -1,0 +1,861 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A mkdocs-based GitHub Pages site for showcasing NOMAD features, examples, and use cases.">
+      
+      
+        <meta name="author" content="Berfin Güne, Haoyu Yang, Joseph Rudzinski, Ahmed E. Mansour">
+      
+      
+      
+        <link rel="prev" href="index2.html">
+      
+      
+        <link rel="next" href="submissions.html">
+      
+      
+      <link rel="icon" href="assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.9">
+    
+    
+      
+        <title>NOMAD Gallery | Explore - NOMAD Gallery</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.4af4bdda.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Titillium Web";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="stylesheets/extra.css">
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="#2A4CDF" data-md-color-accent="#008A67">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="header.title">
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            NOMAD Gallery
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              NOMAD Gallery | Explore
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/FAIRmat-NFDI/nomad-gallery" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="https://nomad-lab.eu" title="NOMAD Gallery" class="md-nav__button md-logo" aria-label="NOMAD Gallery" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    NOMAD Gallery
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/FAIRmat-NFDI/nomad-gallery" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Highlights
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="index2.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Highlights v2
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+      <a href="explore.html" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Explore
+    
+  </span>
+  
+
+      </a>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="submissions.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Submit
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+  <h1>Explore</h1>
+
+<p><img alt="NOMAD Gallery logo" src="assets/images/page/header.svg" /></p>
+<p class="section-title">
+  <span class="section-icon">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+  </span>
+  Explore the NOMAD Gallery
+</p>
+
+<p class="section-subtitle">Browse community-submitted use cases showing how NOMAD is used in real research workflows. Use the filters below to explore by methodology, research field, or keywords.</p>
+
+<div id="galleryFilter" class="gallery-filter">
+  <div class="gallery-filter__bar">
+    <button class="gallery-filter__chip is-active" type="button" data-filter="methodology">Methodology</button>
+    <button class="gallery-filter__chip" type="button" data-filter="field">Research field</button>
+    <button class="gallery-filter__chip" type="button" data-filter="country">Country</button>
+    <button class="gallery-filter__chip" type="button" data-filter="keywords">Keywords</button>
+    <div class="gallery-filter__spacer"></div>
+    <span id="galleryResultsCount" class="gallery-filter__count"></span>
+    <button id="sortGallery" class="gallery-filter__action" type="button">Sort</button>
+    <button id="clearGalleryFilters" class="gallery-filter__action" type="button">Clear</button>
+  </div>
+  <div id="galleryFilterControlRow" class="gallery-filter__control-row"></div>
+  <datalist id="galleryKeywordSuggestions"></datalist>
+</div>
+
+<div id="galleryCards" class="gallery-cards">
+
+<article class="grid-use-case-card gallery-card"
+  data-submission-date="2025-02-15"
+  data-methodology=""
+  data-country=""
+  data-research-field=""
+  data-keywords=""
+  style="--grid-card-gradient: linear-gradient(135deg, #a8c8f0 0%, #7baad8 50%, #5a92c6 100%);">
+
+  <div class="grid-use-case-card__hero" style="background: linear-gradient(135deg, #a8c8f0 0%, #7baad8 50%, #5a92c6 100%);">
+
+            <div class="grid-use-case-card__hero-image">
+              <img src="assets/CG_bilayer.png" alt="MARTINI Lipid Bilayer">
+            </div>
+
+    <div class="grid-use-case-card__pattern"></div>
+    <div class="grid-use-case-card__shade"></div>
+
+    <div class="grid-use-case-card__hero-actions">
+      <a class="grid-use-case-card__icon-button" href="https://nomad-lab.eu/prod/v1/develop/gui/search/entries/entry/id/zDUCtCQEufLerC1c6aJR22JdTdKU" target="_blank" rel="noopener" title="Open in NOMAD">
+    <svg viewBox="0 0 36.0123 36.1669" fill="none" aria-hidden="true">
+      <path d="M10.7 27.6c.5 0 .9-.4.9-.9V8.6c0-.5-.4-.9-.9-.9H8.2c-.5 0-.9.4-.9.9v18.1c0 .5.4.9.9.9h2.5z" fill="#192E86"/>
+      <path d="M17.2 27.6c.5 0 .9-.4.9-.9V15.9c0-2.3 1.3-4 3.4-4 2 0 3.1 1.5 3.1 3.8v11c0 .5.4.9.9.9H28c.5 0 .9-.4.9-.9V14.9c0-4.5-2.5-7.4-6.4-7.4-2.2 0-3.8.8-4.9 2.2V8.6c0-.5-.4-.9-.9-.9h-2.5c-.5 0-.9.4-.9.9v18.1c0 .5.4.9.9.9h2.5z" fill="#2A4CDF"/>
+    </svg>
+    </a>
+    </div>
+  </div>
+
+  <div class="grid-use-case-card__hero-content">
+    <h3 class="grid-use-case-card__title">Visualization of a lipid bilayer according to the coarse-grained MARTINI model</h3>
+    <div class="grid-use-case-card__institution-line">
+      <span></span>
+      <span>•</span>
+      <span></span>
+    </div>
+  </div>
+
+  <div class="grid-use-case-card__body">
+    <div class="grid-use-case-card__pills">
+      <span class="grid-use-case-card__pill grid-use-case-card__pill--field"></span>
+      <span class="grid-use-case-card__pill grid-use-case-card__pill--method"></span>
+    </div>
+
+    <p class="grid-use-case-card__description is-collapsed">The NOMAD visualizer now has support for non-atomic particles (i.e., particles representing something other than a chemical element).</p>
+
+    <div class="grid-use-case-card__keywords">
+
+    </div>
+
+    <div class="grid-use-case-card__meta">
+      <span>By Joseph Rudzinski</span>
+      <div class="grid-use-case-card__meta-right">
+
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+      <line x1="16" y1="2" x2="16" y2="6"></line>
+      <line x1="8" y1="2" x2="8" y2="6"></line>
+      <line x1="3" y1="10" x2="21" y2="10"></line>
+    </svg>
+
+        <span>2025-02-15</span>
+      </div>
+    </div>
+
+    <button class="grid-use-case-card__toggle" type="button" aria-expanded="false">
+      <span class="grid-use-case-card__toggle-label">View Details</span>
+
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+
+    </button>
+  </div>
+
+  <div class="grid-use-case-card__expanded">
+    <div class="grid-use-case-card__expanded-grid">
+      <div class="grid-use-case-card__section">
+
+        <div class="grid-use-case-card__detail">
+          <h4>Keywords</h4>
+          <div class="grid-use-case-card__keywords"></div>
+        </div>
+      </div>
+      <div class="grid-use-case-card__section">
+
+      </div>
+    </div>
+  </div>
+</article>
+
+
+<article class="grid-use-case-card gallery-card"
+  data-submission-date="2025-12-13"
+  data-methodology="Computational"
+  data-country="DE"
+  data-research-field="Material Science"
+  data-keywords="Ionic Liquids,Molecular Dynamics,Non-equilibrium"
+  style="--grid-card-gradient: linear-gradient(135deg, #b0d0f4 0%, #85b5e0 50%, #6a9ed0 100%);">
+
+  <div class="grid-use-case-card__hero" style="background: linear-gradient(135deg, #b0d0f4 0%, #85b5e0 50%, #6a9ed0 100%);">
+
+            <div class="grid-use-case-card__hero-image">
+              <img src="assets/ionic_liquids.png" alt="NOMAD Logo">
+            </div>
+
+    <div class="grid-use-case-card__pattern"></div>
+    <div class="grid-use-case-card__shade"></div>
+
+    <div class="grid-use-case-card__hero-actions">
+      <a class="grid-use-case-card__icon-button" href="https://nomad-lab.eu" target="_blank" rel="noopener" title="Open in NOMAD">
+    <svg viewBox="0 0 36.0123 36.1669" fill="none" aria-hidden="true">
+      <path d="M10.7 27.6c.5 0 .9-.4.9-.9V8.6c0-.5-.4-.9-.9-.9H8.2c-.5 0-.9.4-.9.9v18.1c0 .5.4.9.9.9h2.5z" fill="#192E86"/>
+      <path d="M17.2 27.6c.5 0 .9-.4.9-.9V15.9c0-2.3 1.3-4 3.4-4 2 0 3.1 1.5 3.1 3.8v11c0 .5.4.9.9.9H28c.5 0 .9-.4.9-.9V14.9c0-4.5-2.5-7.4-6.4-7.4-2.2 0-3.8.8-4.9 2.2V8.6c0-.5-.4-.9-.9-.9h-2.5c-.5 0-.9.4-.9.9v18.1c0 .5.4.9.9.9h2.5z" fill="#2A4CDF"/>
+    </svg>
+    </a><a class="grid-use-case-card__icon-button" href="https://doi.org/10.1063/5.0279946" target="_blank" rel="noopener" title="View Publication">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+      <polyline points="13 2 13 9 20 9"></polyline>
+      <line x1="8" y1="13" x2="16" y2="13"></line>
+      <line x1="8" y1="17" x2="16" y2="17"></line>
+    </svg>
+    </a><a class="grid-use-case-card__icon-button" href="https://github.com/FAIRmat-NFDI/nomad-gallery" target="_blank" rel="noopener" title="View Repository">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M12 0C5.373 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.48 11.48 0 0 1 12 6.844c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.799 24 17.302 24 12 24 5.373 18.627 0 12 0z"></path>
+    </svg>
+    </a><a class="grid-use-case-card__icon-button" href="https://doi.org/10.1063/5.0279946" target="_blank" rel="noopener" title="Watch Media">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <polygon points="5 3 19 12 5 21 5 3"></polygon>
+    </svg>
+    </a>
+    </div>
+  </div>
+
+  <div class="grid-use-case-card__hero-content">
+    <h3 class="grid-use-case-card__title">Ionic Liquids under shear</h3>
+    <div class="grid-use-case-card__institution-line">
+      <span>Max-Planck Institute for Polymer Research</span>
+      <span>•</span>
+      <span>DE</span>
+    </div>
+  </div>
+
+  <div class="grid-use-case-card__body">
+    <div class="grid-use-case-card__pills">
+      <span class="grid-use-case-card__pill grid-use-case-card__pill--field">Material Science</span>
+      <span class="grid-use-case-card__pill grid-use-case-card__pill--method">Computational</span>
+    </div>
+
+    <p class="grid-use-case-card__description is-collapsed">This is a test card to verify the new schema fields. It demonstrates how the Research Field, Institution, Data Size, and Metrics appear on the gallery card.</p>
+
+    <div class="grid-use-case-card__keywords">
+      <span class="grid-use-case-card__keyword">#Ionic Liquids</span><span class="grid-use-case-card__keyword">#Molecular Dynamics</span><span class="grid-use-case-card__keyword">#Non-equilibrium</span>
+    </div>
+
+    <div class="grid-use-case-card__meta">
+      <span>By Abbas Gholami</span>
+      <div class="grid-use-case-card__meta-right">
+
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+      <line x1="16" y1="2" x2="16" y2="6"></line>
+      <line x1="8" y1="2" x2="8" y2="6"></line>
+      <line x1="3" y1="10" x2="21" y2="10"></line>
+    </svg>
+
+        <span>2025-12-13</span>
+      </div>
+    </div>
+
+    <button class="grid-use-case-card__toggle" type="button" aria-expanded="false">
+      <span class="grid-use-case-card__toggle-label">View Details</span>
+
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+
+    </button>
+  </div>
+
+  <div class="grid-use-case-card__expanded">
+    <div class="grid-use-case-card__expanded-grid">
+      <div class="grid-use-case-card__section">
+
+            <div class="grid-use-case-card__detail">
+              <h4>Data Size</h4>
+              <p>1.5 TB</p>
+            </div>
+
+            <div class="grid-use-case-card__detail">
+              <h4>Technique</h4>
+              <p>MD simulations</p>
+            </div>
+
+            <div class="grid-use-case-card__detail">
+              <h4>Usage Statistics</h4>
+              <div class="grid-use-case-card__stats">
+                <div class="grid-use-case-card__stat">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+      <circle cx="9" cy="7" r="4"></circle>
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+      <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+    </svg>
+    <span>150 active users</span></div><div class="grid-use-case-card__stat">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+      <polyline points="7 10 12 15 17 10"></polyline>
+      <line x1="12" y1="15" x2="12" y2="3"></line>
+    </svg>
+    <span>5000 downloads</span></div>
+              </div>
+            </div>
+
+            <div class="grid-use-case-card__detail">
+              <h4>Contributors</h4>
+              <p>Joe Rudzinski</p>
+            </div>
+
+        <div class="grid-use-case-card__detail">
+          <h4>Keywords</h4>
+          <div class="grid-use-case-card__keywords"><span class="grid-use-case-card__keyword">#Ionic Liquids</span><span class="grid-use-case-card__keyword">#Molecular Dynamics</span><span class="grid-use-case-card__keyword">#Non-equilibrium</span></div>
+        </div>
+      </div>
+      <div class="grid-use-case-card__section">
+
+            <div class="grid-use-case-card__detail">
+              <h4>Publication Reference</h4>
+              <a href="https://doi.org/10.1063/5.0279946" target="_blank" rel="noopener">https://doi.org/10.1063/5.0279946</a>
+            </div>
+
+            <div class="grid-use-case-card__detail">
+              <h4>Repository Reference</h4>
+              <a href="https://github.com/FAIRmat-NFDI/nomad-gallery" target="_blank" rel="noopener">https://github.com/FAIRmat-NFDI/nomad-gallery</a>
+            </div>
+
+            <div class="grid-use-case-card__detail">
+              <h4>Funding Reference</h4>
+              <p>DFG - Project No. 460197019</p>
+            </div>
+
+            <div class="grid-use-case-card__detail">
+              <h4>Media URL</h4>
+              <a href="https://doi.org/10.1063/5.0279946" target="_blank" rel="noopener">https://doi.org/10.1063/5.0279946</a>
+            </div>
+
+      </div>
+    </div>
+  </div>
+</article>
+
+
+<article class="grid-use-case-card gallery-card"
+  data-submission-date="2025-02-19"
+  data-methodology="Experimental"
+  data-country="DE"
+  data-research-field="Photovoltaics"
+  data-keywords="Perovskites,Solar cells,Energy materials,Materials database"
+  style="--grid-card-gradient: linear-gradient(135deg, #9ec4ee 0%, #72a4d4 50%, #5890c2 100%);">
+
+  <div class="grid-use-case-card__hero" style="background: linear-gradient(135deg, #9ec4ee 0%, #72a4d4 50%, #5890c2 100%);">
+
+            <div class="grid-use-case-card__hero-image">
+              <img src="https://raw.githubusercontent.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database/main/docs/assets/search_perovskite_solar_cells.gif" alt="Perovskite Solar Cell Database">
+            </div>
+
+    <div class="grid-use-case-card__pattern"></div>
+    <div class="grid-use-case-card__shade"></div>
+
+    <div class="grid-use-case-card__hero-actions">
+      <a class="grid-use-case-card__icon-button" href="https://nomad-lab.eu/prod/v1/staging/gui/search/perovskite-solar-cells-database" target="_blank" rel="noopener" title="Open in NOMAD">
+    <svg viewBox="0 0 36.0123 36.1669" fill="none" aria-hidden="true">
+      <path d="M10.7 27.6c.5 0 .9-.4.9-.9V8.6c0-.5-.4-.9-.9-.9H8.2c-.5 0-.9.4-.9.9v18.1c0 .5.4.9.9.9h2.5z" fill="#192E86"/>
+      <path d="M17.2 27.6c.5 0 .9-.4.9-.9V15.9c0-2.3 1.3-4 3.4-4 2 0 3.1 1.5 3.1 3.8v11c0 .5.4.9.9.9H28c.5 0 .9-.4.9-.9V14.9c0-4.5-2.5-7.4-6.4-7.4-2.2 0-3.8.8-4.9 2.2V8.6c0-.5-.4-.9-.9-.9h-2.5c-.5 0-.9.4-.9.9v18.1c0 .5.4.9.9.9h2.5z" fill="#2A4CDF"/>
+    </svg>
+    </a><a class="grid-use-case-card__icon-button" href="https://fairmat-nfdi.github.io/nomad-perovskite-solar-cells-database" target="_blank" rel="noopener" title="View Publication">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+      <polyline points="13 2 13 9 20 9"></polyline>
+      <line x1="8" y1="13" x2="16" y2="13"></line>
+      <line x1="8" y1="17" x2="16" y2="17"></line>
+    </svg>
+    </a><a class="grid-use-case-card__icon-button" href="https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database" target="_blank" rel="noopener" title="View Repository">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M12 0C5.373 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.48 11.48 0 0 1 12 6.844c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.799 24 17.302 24 12 24 5.373 18.627 0 12 0z"></path>
+    </svg>
+    </a>
+    </div>
+  </div>
+
+  <div class="grid-use-case-card__hero-content">
+    <h3 class="grid-use-case-card__title">Search interface for the perovskite solar cell database</h3>
+    <div class="grid-use-case-card__institution-line">
+      <span>Humboldt-Universität zu Berlin</span>
+      <span>•</span>
+      <span>DE</span>
+    </div>
+  </div>
+
+  <div class="grid-use-case-card__body">
+    <div class="grid-use-case-card__pills">
+      <span class="grid-use-case-card__pill grid-use-case-card__pill--field">Photovoltaics</span>
+      <span class="grid-use-case-card__pill grid-use-case-card__pill--method">Experimental</span>
+    </div>
+
+    <p class="grid-use-case-card__description is-collapsed">A search interface for exploring the perovskite solar cell database using materials, composition, and device-property filters to support comparison and analysis of photovoltaic performance.</p>
+
+    <div class="grid-use-case-card__keywords">
+      <span class="grid-use-case-card__keyword">#Perovskites</span><span class="grid-use-case-card__keyword">#Solar cells</span><span class="grid-use-case-card__keyword">#Energy materials</span><span class="grid-use-case-card__keyword">#Materials database</span>
+    </div>
+
+    <div class="grid-use-case-card__meta">
+      <span>By Pepe Marquez</span>
+      <div class="grid-use-case-card__meta-right">
+
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+      <line x1="16" y1="2" x2="16" y2="6"></line>
+      <line x1="8" y1="2" x2="8" y2="6"></line>
+      <line x1="3" y1="10" x2="21" y2="10"></line>
+    </svg>
+
+        <span>2025-02-19</span>
+      </div>
+    </div>
+
+    <button class="grid-use-case-card__toggle" type="button" aria-expanded="false">
+      <span class="grid-use-case-card__toggle-label">View Details</span>
+
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+
+    </button>
+  </div>
+
+  <div class="grid-use-case-card__expanded">
+    <div class="grid-use-case-card__expanded-grid">
+      <div class="grid-use-case-card__section">
+
+            <div class="grid-use-case-card__detail">
+              <h4>Data Size</h4>
+              <p>1.5 TB</p>
+            </div>
+
+            <div class="grid-use-case-card__detail">
+              <h4>Technique</h4>
+              <p>perovskite solar cell fabrication, photovoltaic device characterization</p>
+            </div>
+
+            <div class="grid-use-case-card__detail">
+              <h4>Usage Statistics</h4>
+              <div class="grid-use-case-card__stats">
+                <div class="grid-use-case-card__stat">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+      <circle cx="9" cy="7" r="4"></circle>
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+      <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+    </svg>
+    <span>3000 active users</span></div>
+              </div>
+            </div>
+
+            <div class="grid-use-case-card__detail">
+              <h4>Contributors</h4>
+              <p>test</p>
+            </div>
+
+        <div class="grid-use-case-card__detail">
+          <h4>Keywords</h4>
+          <div class="grid-use-case-card__keywords"><span class="grid-use-case-card__keyword">#Perovskites</span><span class="grid-use-case-card__keyword">#Solar cells</span><span class="grid-use-case-card__keyword">#Energy materials</span><span class="grid-use-case-card__keyword">#Materials database</span></div>
+        </div>
+      </div>
+      <div class="grid-use-case-card__section">
+
+            <div class="grid-use-case-card__detail">
+              <h4>Publication Reference</h4>
+              <a href="https://fairmat-nfdi.github.io/nomad-perovskite-solar-cells-database" target="_blank" rel="noopener">https://fairmat-nfdi.github.io/nomad-perovskite-solar-cells-database</a>
+            </div>
+
+            <div class="grid-use-case-card__detail">
+              <h4>Repository Reference</h4>
+              <a href="https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database" target="_blank" rel="noopener">https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database</a>
+            </div>
+
+            <div class="grid-use-case-card__detail">
+              <h4>Funding Reference</h4>
+              <p>Deutsche Forschungsgemeinschaft (DFG) - Project 460197019</p>
+            </div>
+
+      </div>
+    </div>
+  </div>
+</article>
+
+
+<article class="grid-use-case-card gallery-card"
+  data-submission-date="2025-01-01"
+  data-methodology=""
+  data-country=""
+  data-research-field=""
+  data-keywords=""
+  style="--grid-card-gradient: linear-gradient(135deg, #b8d6f6 0%, #90bee4 50%, #74a8d4 100%);">
+
+  <div class="grid-use-case-card__hero" style="background: linear-gradient(135deg, #b8d6f6 0%, #90bee4 50%, #74a8d4 100%);">
+
+    <div class="grid-use-case-card__pattern"></div>
+    <div class="grid-use-case-card__shade"></div>
+
+    <div class="grid-use-case-card__hero-actions">
+
+    </div>
+  </div>
+
+  <div class="grid-use-case-card__hero-content">
+    <h3 class="grid-use-case-card__title">Pulsed Laser Deposition (PLD)</h3>
+    <div class="grid-use-case-card__institution-line">
+      <span></span>
+      <span>•</span>
+      <span></span>
+    </div>
+  </div>
+
+  <div class="grid-use-case-card__body">
+    <div class="grid-use-case-card__pills">
+      <span class="grid-use-case-card__pill grid-use-case-card__pill--field"></span>
+      <span class="grid-use-case-card__pill grid-use-case-card__pill--method"></span>
+    </div>
+
+    <p class="grid-use-case-card__description is-collapsed">Pulsed Laser Deposition (PLD)</p>
+
+    <div class="grid-use-case-card__keywords">
+
+    </div>
+
+    <div class="grid-use-case-card__meta">
+      <span>By Pepe Márquez (HU Berlin) or GitHub handle</span>
+      <div class="grid-use-case-card__meta-right">
+
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+      <line x1="16" y1="2" x2="16" y2="6"></line>
+      <line x1="8" y1="2" x2="8" y2="6"></line>
+      <line x1="3" y1="10" x2="21" y2="10"></line>
+    </svg>
+
+        <span>2025-01-01</span>
+      </div>
+    </div>
+
+    <button class="grid-use-case-card__toggle" type="button" aria-expanded="false">
+      <span class="grid-use-case-card__toggle-label">View Details</span>
+
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+
+    </button>
+  </div>
+
+  <div class="grid-use-case-card__expanded">
+    <div class="grid-use-case-card__expanded-grid">
+      <div class="grid-use-case-card__section">
+
+        <div class="grid-use-case-card__detail">
+          <h4>Keywords</h4>
+          <div class="grid-use-case-card__keywords"></div>
+        </div>
+      </div>
+      <div class="grid-use-case-card__section">
+
+      </div>
+    </div>
+  </div>
+</article>
+
+
+</div>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+        
+      </div>
+      <div class="md-social">
+  
+</div>
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": ".", "features": ["content.tabs.link"], "search": "assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+        <script src="javascript.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
