@@ -1,7 +1,18 @@
+# Security notes for maintainers:
+# - Treat issue form fields and issue metadata as untrusted input.
+# - Do not execute user-provided values in shell commands.
+# - Do not write untrusted values into GITHUB_ENV or GITHUB_OUTPUT from shell.
+# - Keep least-privilege permissions and pin third-party actions to full commit SHAs.
+
 name: Process Approved Submission to Create Cards
+
 on:
   issues:
     types: [labeled]
+
+permissions:
+  contents: read
+  issues: read
 
 jobs:
   create-card:
@@ -10,144 +21,183 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-      # issues: write # Needed to comment on the issue later
+      issues: read
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Extract and Clean Title
-        id: clean-title
-        env:
-          FULL_TITLE: ${{ github.event.issue.title }}
-        run: |
-          # Strip the '[Submission]: ' prefix (and trim any trailing spaces)
-          CLEANED_TITLE="${FULL_TITLE#\[Submission\]: }"
-          CLEANED_TITLE=$(echo "$CLEANED_TITLE" | xargs)
-
-          # Save to environment variables for later steps
-          echo "title=$CLEANED_TITLE" >> "$GITHUB_ENV"
+        uses: actions/checkout@v6
 
       - name: Parse Issue
-        uses: stefanbuck/github-issue-parser@v3
+        uses: stefanbuck/github-issue-parser@10dcc54158ba4c137713d9d69d70a2da63b6bda3
         id: issue-parser
         with:
           template-path: .github/ISSUE_TEMPLATE/submission.yml
 
-      - name: Extract and Download Image
-        env:
-          IMAGE_MD: ${{ steps.issue-parser.outputs.issueparser_image_url }}
-          ISSUE_NUM: ${{ github.event.issue.number }}
-        run: |
-          IMAGE_URL=$(echo "$IMAGE_MD" | grep -Eo 'https?://[^ )">]+' | head -n 1)
-          mkdir -p docs/assets
-
-          if [ -n "$IMAGE_URL" ]; then
-            echo "Downloading image from $IMAGE_URL"
-
-            # Strip any query parameters and get the filename
-            CLEAN_URL="${IMAGE_URL%%?*}"
-            FILENAME=$(basename "$CLEAN_URL")
-
-            # Extract the extension, or default to png if there isn't one
-            if [[ "$FILENAME" == *.* ]]; then
-              EXT="${FILENAME##*.}"
-            else
-              EXT="png"
-            fi
-
-            # Download and save with the extracted extension
-            curl -sL "$IMAGE_URL" -o "docs/assets/issue-${ISSUE_NUM}.${EXT}"
-
-            # Save the extension to the environment for the Markdown step
-            echo "IMG_EXT=$EXT" >> "$GITHUB_ENV"
-          else
-            echo "No valid image URL found."
-            exit 1
-          fi
-
       - name: Generate Markdown Card
+        id: generate
+        uses: actions/github-script@v9
         env:
-          TITLE: ${{ env.title }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_NUM: ${{ github.event.issue.number }}
           SUBMITTER: ${{ steps.issue-parser.outputs.issueparser_submitter }}
           RESEARCH_FIELD: ${{ steps.issue-parser.outputs.issueparser_research_field }}
           INSTITUTION: ${{ steps.issue-parser.outputs.issueparser_institution }}
           COUNTRY: ${{ steps.issue-parser.outputs.issueparser_country }}
-          DESC: ${{ steps.issue-parser.outputs.issueparser_description }}
-          ISSUE_NUM: ${{ github.event.issue.number }}
+          DESCRIPTION: ${{ steps.issue-parser.outputs.issueparser_description }}
+          IMAGE_URL: ${{ steps.issue-parser.outputs.issueparser_image_url }}
           CONTRIBUTORS: ${{ steps.issue-parser.outputs.issueparser_contributors }}
           KEYWORDS: ${{ steps.issue-parser.outputs.issueparser_keywords }}
           METHODOLOGY: ${{ steps.issue-parser.outputs.issueparser_methodology_type }}
           TECHNIQUE: ${{ steps.issue-parser.outputs.issueparser_technique }}
           DATA_SIZE: ${{ steps.issue-parser.outputs.issueparser_data_size }}
-          PUB_REF: ${{ steps.issue-parser.outputs.issueparser_publication_reference }}
-          REPO_REF: ${{ steps.issue-parser.outputs.issueparser_repo_reference }}
-          DATA_REF: ${{ steps.issue-parser.outputs.issueparser_dataset_reference }}
-          FUND_REF: ${{ steps.issue-parser.outputs.issueparser_funding_reference }}
+          PUBLICATION_REFERENCE: ${{ steps.issue-parser.outputs.issueparser_publication_reference }}
+          REPO_REFERENCE: ${{ steps.issue-parser.outputs.issueparser_repo_reference }}
+          DATASET_REFERENCE: ${{ steps.issue-parser.outputs.issueparser_dataset_reference }}
+          FUNDING_REFERENCE: ${{ steps.issue-parser.outputs.issueparser_funding_reference }}
           MEDIA_URL: ${{ steps.issue-parser.outputs.issueparser_media_url }}
-          ACTIVE_USERS: ${{ steps.issue-parser.outputs.issueparser_estimated_active_users }}
+          ESTIMATED_ACTIVE_USERS: ${{ steps.issue-parser.outputs.issueparser_estimated_active_users }}
           DOWNLOADS: ${{ steps.issue-parser.outputs.issueparser_downloads }}
-        run: |
-          mkdir -p docs/cards
-          DATE=$(date +%Y-%m-%d)
-          FILE="docs/cards/issue-${ISSUE_NUM}.md"
-          IMAGE_EXT="${IMG_EXT:-png}"
+        with:
+          script: |
+            const fs = require("fs");
+            const path = require("path");
 
-          # 1. Write the required base content
-          cat <<EOF > "$FILE"
-          ---
-          title: "$TITLE"
-          submitter: "$SUBMITTER"
-          research_field: "$RESEARCH_FIELD"
-          institution: "$INSTITUTION"
-          country: "$COUNTRY"
-          submission_date: "$DATE"
-          ---
+            // Normalize single-line fields: remove nulls, collapse whitespace, cap length.
+            function cleanSingleLine(value, maxLen = 300) {
+              return (value || "")
+                .replace(/\u0000/g, "")
+                .replace(/\s+/g, " ")
+                .trim()
+                .slice(0, maxLen);
+            }
 
-          # $TITLE
+            // Keep multiline content but enforce null stripping and max size.
+            function cleanMultiline(value, maxLen = 10000) {
+              return (value || "")
+                .replace(/\u0000/g, "")
+                .trim()
+                .slice(0, maxLen);
+            }
 
-          $DESC
+            // Quote frontmatter values safely so user content cannot break YAML structure.
+            function yamlQuote(value) {
+              return JSON.stringify(value ?? "");
+            }
 
-          ![Image](../assets/issue-${ISSUE_NUM}.${IMAGE_EXT})
+            // Allow only absolute HTTP(S) URLs for rendered links.
+            function sanitizeUrl(value) {
+              const raw = cleanSingleLine(value, 1000);
+              if (!raw) return "";
+              try {
+                const url = new URL(raw);
+                if (url.protocol !== "http:" && url.protocol !== "https:") return "";
+                return url.toString();
+              } catch {
+                return "";
+              }
+            }
 
-          ## Details
-          EOF
+            // Append optional list items after normalization.
+            function addListItem(lines, label, value) {
+              const v = cleanMultiline(value, 2000);
+              if (!v) return;
+              lines.push(`- **${label}:** ${v.replace(/\n+/g, " ").trim()}`);
+            }
 
-          # Conditionally append Details
-          [ -n "$CONTRIBUTORS" ] && echo "- **Contributors:** $COAUTHORS" >> "$FILE"
-          [ -n "$KEYWORDS" ] && echo "- **Keywords:** $KEYWORDS" >> "$FILE"
-          [ -n "$METHODOLOGY" ] && echo "- **Methodology Type:** $METHODOLOGY" >> "$FILE"
-          [ -n "$TECHNIQUE" ] && echo "- **Specific Technique:** $TECHNIQUE" >> "$FILE"
-          [ -n "$DATA_SIZE" ] && echo "- **Data Size:** $DATA_SIZE" >> "$FILE"
+            // Extract user provided fields
+            const title = cleanSingleLine(process.env.ISSUE_TITLE, 200).replace(/^\[Submission\]:\s*/i, "");
+            const issueNum = cleanSingleLine(process.env.ISSUE_NUM, 20);
+            if (!title) {
+              core.setFailed("Submission title is empty.");
+              return;
+            }
+            if (!issueNum) {
+              core.setFailed("Issue number is missing.");
+              return;
+            }
 
-          # Conditionally append References section and its items
-          if [ -n "$PUB_REF" ] || [ -n "$REPO_REF" ] || [ -n "$DATA_REF" ] || [ -n "$FUND_REF" ] || [ -n "$MEDIA_URL" ]; then
-            echo "" >> "$FILE"
-            echo "## References" >> "$FILE"
-            [ -n "$PUB_REF" ] && echo "- **Publication:** $PUB_REF" >> "$FILE"
-            [ -n "$REPO_REF" ] && echo "- **Repository:** $REPO_REF" >> "$FILE"
-            [ -n "$DATA_REF" ] && echo "- **Dataset:** $DATA_REF" >> "$FILE"
-            [ -n "$FUND_REF" ] && echo "- **Funding:** $FUND_REF" >> "$FILE"
-            [ -n "$MEDIA_URL" ] && echo "- **Media:** $MEDIA_URL" >> "$FILE"
-          fi
+            const submitter = cleanSingleLine(process.env.SUBMITTER, 120);
+            const researchField = cleanSingleLine(process.env.RESEARCH_FIELD, 120);
+            const institution = cleanSingleLine(process.env.INSTITUTION, 160);
+            const country = cleanSingleLine(process.env.COUNTRY, 120);
+            const description = cleanMultiline(process.env.DESCRIPTION, 10000);
+            const imageUrl = sanitizeUrl(process.env.IMAGE_URL);
 
-          # Conditionally append Metrics section and its items
-          if [ -n "$ACTIVE_USERS" ] || [ -n "$DOWNLOADS" ]; then
-            echo "" >> "$FILE"
-            echo "## Metrics" >> "$FILE"
-            [ -n "$ACTIVE_USERS" ] && echo "- **Estimated Active Users:** $ACTIVE_USERS" >> "$FILE"
-            [ -n "$DOWNLOADS" ] && echo "- **Downloads:** $DOWNLOADS" >> "$FILE"
-          fi
+            // Double check required fields
+            if (!submitter || !researchField || !institution || !country || !description) {
+              core.setFailed("One or more required fields are missing.");
+              return;
+            }
+
+            const date = new Date().toISOString().slice(0, 10);
+            const cardPath = path.join("docs", "cards", `issue-${issueNum}.md`);
+            const lines = [
+              "---",
+              `title: ${yamlQuote(title)}`,
+              `submitter: ${yamlQuote(submitter)}`,
+              `research_field: ${yamlQuote(researchField)}`,
+              `institution: ${yamlQuote(institution)}`,
+              `country: ${yamlQuote(country)}`,
+              `submission_date: ${yamlQuote(date)}`,
+              "---",
+              "",
+              `# ${title}`,
+              "",
+              description,
+              "",
+              imageUrl ? `![Image](${imageUrl})` : "![Image](../assets/image-placeholder.png)",
+              "",
+              "## Details",
+            ];
+
+            addListItem(lines, "Contributors", process.env.CONTRIBUTORS);
+            addListItem(lines, "Keywords", process.env.KEYWORDS);
+            addListItem(lines, "Methodology Type", process.env.METHODOLOGY);
+            addListItem(lines, "Specific Technique", process.env.TECHNIQUE);
+            addListItem(lines, "Data Size", process.env.DATA_SIZE);
+
+            // Check and add optional fields
+            const hasReferences = [
+              process.env.PUBLICATION_REFERENCE,
+              process.env.REPO_REFERENCE,
+              process.env.DATASET_REFERENCE,
+              process.env.FUNDING_REFERENCE,
+              process.env.MEDIA_URL,
+            ].some((v) => cleanSingleLine(v).length > 0);
+
+            if (hasReferences) {
+              lines.push("", "## References");
+              addListItem(lines, "Publication", process.env.PUBLICATION_REFERENCE);
+              addListItem(lines, "Repository", process.env.REPO_REFERENCE);
+              addListItem(lines, "Dataset", process.env.DATASET_REFERENCE);
+              addListItem(lines, "Funding", process.env.FUNDING_REFERENCE);
+              addListItem(lines, "Media", process.env.MEDIA_URL);
+            }
+
+            const hasMetrics = [process.env.ESTIMATED_ACTIVE_USERS, process.env.DOWNLOADS].some(
+              (v) => cleanSingleLine(v).length > 0
+            );
+
+            if (hasMetrics) {
+              lines.push("", "## Metrics");
+              addListItem(lines, "Estimated Active Users", process.env.ESTIMATED_ACTIVE_USERS);
+              addListItem(lines, "Downloads", process.env.DOWNLOADS);
+            }
+
+            // Write generated card
+            fs.mkdirSync(path.dirname(cardPath), { recursive: true });
+            fs.writeFileSync(cardPath, `${lines.join("\n")}\n`, "utf8");
+
+            core.setOutput("card_path", cardPath);
+            core.setOutput("title", title);
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8
         with:
-          commit-message: "feat: add submission card for ${{ env.title }}"
-          title: "Submission: ${{ env.title }}"
+          commit-message: "add submission card for ${{ steps.generate.outputs.title }}"
+          title: "Submission: ${{ steps.generate.outputs.title }}"
           body: |
-            Automated PR to add the submission card for **${{ env.title }}**.
+            Automated PR to add the submission card for **${{ steps.generate.outputs.title }}**.
 
             Closes #${{ github.event.issue.number }}
           branch: "submission/issue-${{ github.event.issue.number }}"
-          add-paths: |
-            docs/cards/*.md
-            docs/assets/*
+          add-paths: ${{ steps.generate.outputs.card_path }}
