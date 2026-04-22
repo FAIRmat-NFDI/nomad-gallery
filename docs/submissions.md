@@ -16,7 +16,7 @@ title: NOMAD Gallery | Submit
   We welcome contributions to the NOMAD gallery!
 </p>
 
-To submit a new entry, simply fill out the [**submission form**](https://github.com/FAIRmat-NFDI/nomad-gallery/issues/new?template=submission.md).
+To submit a new entry, simply fill out the [**submission form**](https://github.com/FAIRmat-NFDI/nomad-gallery/issues/new?template=submission.yml).
 
 The form will guide you through the required information to ensure your submission follows the correct format.
  
