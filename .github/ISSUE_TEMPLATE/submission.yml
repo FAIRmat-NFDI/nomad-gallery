@@ -1,0 +1,142 @@
+name: Submission
+description: Create a new submission from template.
+title: "[Submission]: <Use Case Title>"
+labels: ["submission"]
+assignees: ["JFRudzinski", "ahm531", "natalia3101"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Enter a short, descriptive title that summarizes the use case or gallery entry, e.g., Automated ELN workflow for perovskite solar cell experiments.
+
+  # 1. Basic Info & Research Field
+  - type: input
+    id: submitter
+    attributes:
+      label: Submitter
+      placeholder: "Firstname Lastname"
+    validations:
+      required: true
+
+  - type: input
+    id: research_field
+    attributes:
+      label: Research Field
+      placeholder: "e.g., Battery Science"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Provide a short summary of the use case, including the goal, the data or tool involved, and its main outcome.
+    validations:
+      required: true
+
+  - type: textarea
+    id: image_url
+    attributes:
+      label: Image URL
+      description: Provide the main image for the gallery entry. You can paste the image directly into the field or provide a URL linking to the image.
+    validations:
+      required: true
+
+  # 2. Affiliation / Institution
+  - type: input
+    id: institution
+    attributes:
+      label: Institution
+    validations:
+      required: true
+
+  - type: input
+    id: country
+    attributes:
+      label: Country
+    validations:
+      required: true
+
+  # 3. Authors (Coauthors)
+  - type: textarea
+    id: contributors
+    attributes:
+      label: Contributors
+      description: List additional contributors involved in this use case or submission (one per line).
+
+  # 4. Methodology
+  - type: dropdown
+    id: methodology_type
+    attributes:
+      label: Methodology Type
+      options:
+        - Computational
+        - Experimental
+        - Mixed/Hybrid
+    validations:
+      required: true
+
+  - type: input
+    id: technique
+    attributes:
+      label: Specific Technique
+      placeholder: "e.g., DFT, XPS, molecular dynamics, thin-film deposition"
+      description: Specify the main technique or method used in this use case.
+
+  # 5. Data Metadata
+  - type: input
+    id: data_size
+    attributes:
+      label: Data Size
+      placeholder: "e.g., 50 GB"
+      description: Approximate size of the dataset associated with this use case.
+
+  - type: textarea
+    id: keywords
+    attributes:
+      label: Keywords
+      description: Add keywords (one per line).
+
+  # 6. References
+  - type: input
+    id: publication_reference
+    attributes:
+      label: Publication Reference
+      description: Provide the DOI or link to a publication related to this use case (if available).
+
+  - type: input
+    id: repo_reference
+    attributes:
+      label: Repository Reference
+      description: Provide a link to the source code repository associated with this use case (e.g., GitHub, GitLab).
+
+  - type: input
+    id: dataset_reference
+    attributes:
+      label: Dataset Reference
+      description: Provide a link to the dataset associated with this use case (e.g., DOI, NOMAD upload or entry ID)
+
+  - type: input
+    id: funding_reference
+    attributes:
+      label: Funding Reference
+      description: Grant number or agency.
+
+  - type: input
+    id: media_url
+    attributes:
+      label: Media URL
+      description: Provide a link to a video, animation, or GIF illustrating the use case (optional).
+
+  # 7. Metrics
+  - type: input
+    id: estimated_active_users
+    attributes:
+      label: Estimated Active Users
+      description: Approximate number of users currently using or interacting with this tool, dataset, or use case.
+
+  - type: input
+    id: downloads
+    attributes:
+      label: Downloads
+      description: Number of downloads of the associated dataset or software (if known).
