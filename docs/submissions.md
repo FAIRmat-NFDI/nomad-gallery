@@ -1,7 +1,11 @@
 ---
 title: NOMAD Gallery | Submit
 ---
-![NOMAD Gallery banner](assets/images/page/header.svg)
+
+<div class="page-banner">
+  <img src="assets/images/page/nomad-gallery-logo.png" alt="NOMAD Gallery" class="page-banner__logo">
+  <p>Welcome to <strong>NOMAD Gallery</strong> &mdash; a space to showcase innovative features, uploads, and use cases created with the NOMAD platform. Whether you want to share your latest work or explore what&rsquo;s possible, this is the place to <strong>engage, discover, and inspire.</strong></p>
+</div>
 
 <p class="section-title">
   <span class="section-icon">
@@ -13,7 +17,7 @@ title: NOMAD Gallery | Submit
   Submit your use case
 </p>
 <p class="section-subtitle">
-  We welcome contributions to the NOMAD gallery!
+  We welcome contributions to the NOMAD Gallery!
 </p>
 
 To submit a new entry, simply fill out the [**submission form**](https://github.com/FAIRmat-NFDI/nomad-gallery/issues/new?template=submission.yml).
