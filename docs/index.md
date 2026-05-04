@@ -2,7 +2,10 @@
 title: NOMAD Gallery | Home
 ---
 
-![NOMAD Gallery logo](assets/images/page/header.svg)
+<div class="page-banner">
+  <img src="assets/images/page/nomad-gallery-logo.png" alt="NOMAD Gallery" class="page-banner__logo">
+  <p>Welcome to <strong>NOMAD Gallery</strong> &mdash; a space to showcase innovative features, uploads, and use cases created with the NOMAD platform. Whether you want to share your latest work or explore what&rsquo;s possible, this is the place to <strong>engage, discover, and inspire.</strong></p>
+</div>
 
 <p class="section-title">
   <span class="section-icon">

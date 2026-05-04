@@ -183,6 +183,8 @@
   position: relative;
   margin: 1.25rem 0 2rem;
   overflow: visible;
+  isolation: isolate;
+  z-index: 0;
 }
 
 .featured-rotator__viewport {
@@ -845,4 +847,35 @@
     flex-direction: column;
     align-items: flex-start;
   }
+}
+
+/* =========================
+   Page banner
+   ========================= */
+
+.page-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 2.5rem;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.page-banner__logo {
+  width: 360px;
+  height: auto;
+}
+
+.page-banner > p {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.65;
+  color: #2a4cdf;
 }
