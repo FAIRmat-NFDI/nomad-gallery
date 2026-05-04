@@ -121,7 +121,7 @@ def _icon_chevron_down():
 
 
 def _icon_nomad():
-    return '<img src="assets/images/page/favicon.png" alt="NOMAD" aria-hidden="true">'
+    return '<img src="assets/images/page/nomad-logo.png" alt="NOMAD" aria-hidden="true">'
 
 
 def _icon_document():
