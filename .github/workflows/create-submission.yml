@@ -96,11 +96,29 @@ jobs:
               }
             }
 
-            // Append optional list items after normalization.
-            function addListItem(lines, label, value) {
-              const v = cleanMultiline(value, 2000);
+            // Split multi-line user input into a cleaned list.
+            function toList(value, maxItems = 20) {
+              return cleanMultiline(value, 6000)
+                .split(/\n+/)
+                .map((line) => line.replace(/^[-*]\s*/, "").trim())
+                .filter(Boolean)
+                .slice(0, maxItems);
+            }
+
+            // Add YAML key only when value exists.
+            function addScalarField(lines, key, value) {
+              const v = cleanSingleLine(value, 1000);
               if (!v) return;
-              lines.push(`- **${label}:** ${v.replace(/\n+/g, " ").trim()}`);
+              lines.push(`${key}: ${yamlQuote(v)}`);
+            }
+
+            // Add YAML list key with indented items.
+            function addListField(lines, key, values) {
+              if (!values || values.length === 0) return;
+              lines.push(`${key}:`);
+              for (const item of values) {
+                lines.push(`  - ${yamlQuote(item)}`);
+              }
             }
 
             // Extract user provided fields
@@ -120,10 +138,22 @@ jobs:
             const institution = cleanSingleLine(process.env.INSTITUTION, 160);
             const country = cleanSingleLine(process.env.COUNTRY, 120);
             const description = cleanMultiline(process.env.DESCRIPTION, 10000);
-            const imageUrl = sanitizeUrl(process.env.IMAGE_URL);
+            const imagePathRaw = cleanSingleLine(process.env.IMAGE_URL, 1000);
+            const contributors = toList(process.env.CONTRIBUTORS, 30);
+            const keywords = toList(process.env.KEYWORDS, 30);
+            const methodologyType = cleanSingleLine(process.env.METHODOLOGY, 80);
+            const technique = cleanSingleLine(process.env.TECHNIQUE, 400);
+            const dataSize = cleanSingleLine(process.env.DATA_SIZE, 100);
+            const publicationReference = cleanSingleLine(process.env.PUBLICATION_REFERENCE, 1000);
+            const repositoryReference = cleanSingleLine(process.env.REPO_REFERENCE, 1000);
+            const datasetReference = cleanSingleLine(process.env.DATASET_REFERENCE, 1000);
+            const fundingReference = cleanSingleLine(process.env.FUNDING_REFERENCE, 300);
+            const mediaUrl = cleanSingleLine(process.env.MEDIA_URL, 1000);
+            const estimatedActiveUsers = cleanSingleLine(process.env.ESTIMATED_ACTIVE_USERS, 120);
+            const downloads = cleanSingleLine(process.env.DOWNLOADS, 120);
 
             // Double check required fields
-            if (!submitter || !researchField || !institution || !country || !description) {
+            if (!submitter || !researchField || !institution || !country || !description || !methodologyType) {
               core.setFailed("One or more required fields are missing.");
               return;
             }
@@ -134,54 +164,29 @@ jobs:
               "---",
               `title: ${yamlQuote(title)}`,
               `submitter: ${yamlQuote(submitter)}`,
-              `research_field: ${yamlQuote(researchField)}`,
               `institution: ${yamlQuote(institution)}`,
               `country: ${yamlQuote(country)}`,
+              `research_field: ${yamlQuote(researchField)}`,
+              `methodology_type: ${yamlQuote(methodologyType)}`,
+              `description: ${yamlQuote(description)}`,
               `submission_date: ${yamlQuote(date)}`,
-              "---",
-              "",
-              `# ${title}`,
-              "",
-              description,
-              "",
-              imageUrl ? `![Image](${imageUrl})` : "![Image](../assets/image-placeholder.png)",
-              "",
-              "## Details",
             ];
+            // Add option fields
+            addScalarField(lines, "technique", technique);
+            addListField(lines, "coauthors", contributors);
+            addScalarField(lines, "image_path", imagePathRaw);
+            addScalarField(lines, "entry_link", datasetReference);
+            addListField(lines, "keywords", keywords);
+            addScalarField(lines, "publication_reference", publicationReference);
+            addScalarField(lines, "repository_reference", repositoryReference);
+            addScalarField(lines, "dataset_reference", datasetReference);
+            addScalarField(lines, "funding_reference", fundingReference);
+            addScalarField(lines, "media_url", mediaUrl);
+            addScalarField(lines, "data_size", dataSize);
+            addScalarField(lines, "estimated_active_users", estimatedActiveUsers);
+            addScalarField(lines, "downloads", downloads);
 
-            addListItem(lines, "Contributors", process.env.CONTRIBUTORS);
-            addListItem(lines, "Keywords", process.env.KEYWORDS);
-            addListItem(lines, "Methodology Type", process.env.METHODOLOGY);
-            addListItem(lines, "Specific Technique", process.env.TECHNIQUE);
-            addListItem(lines, "Data Size", process.env.DATA_SIZE);
-
-            // Check and add optional fields
-            const hasReferences = [
-              process.env.PUBLICATION_REFERENCE,
-              process.env.REPO_REFERENCE,
-              process.env.DATASET_REFERENCE,
-              process.env.FUNDING_REFERENCE,
-              process.env.MEDIA_URL,
-            ].some((v) => cleanSingleLine(v).length > 0);
-
-            if (hasReferences) {
-              lines.push("", "## References");
-              addListItem(lines, "Publication", process.env.PUBLICATION_REFERENCE);
-              addListItem(lines, "Repository", process.env.REPO_REFERENCE);
-              addListItem(lines, "Dataset", process.env.DATASET_REFERENCE);
-              addListItem(lines, "Funding", process.env.FUNDING_REFERENCE);
-              addListItem(lines, "Media", process.env.MEDIA_URL);
-            }
-
-            const hasMetrics = [process.env.ESTIMATED_ACTIVE_USERS, process.env.DOWNLOADS].some(
-              (v) => cleanSingleLine(v).length > 0
-            );
-
-            if (hasMetrics) {
-              lines.push("", "## Metrics");
-              addListItem(lines, "Estimated Active Users", process.env.ESTIMATED_ACTIVE_USERS);
-              addListItem(lines, "Downloads", process.env.DOWNLOADS);
-            }
+            lines.push("---");
 
             // Write generated card
             fs.mkdirSync(path.dirname(cardPath), { recursive: true });
