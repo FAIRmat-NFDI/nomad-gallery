@@ -38,7 +38,7 @@ body:
     id: image_url
     attributes:
       label: Image URL
-      description: Provide the main image for the gallery entry. You can paste the image directly into the field or provide a URL linking to the image.
+      description: Provide the main image for the gallery entry. Supported/recommended formats for GitHub Pages markdown rendering are PNG, JPG/JPEG, GIF, or SVG. Use a direct image URL ending with the image file extension.
     validations:
       required: true
 
