@@ -1,0 +1,51 @@
+name: test-and-preview
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  UV_INDEX: https://gitlab.mpcdf.mpg.de/api/v4/projects/2187/packages/pypi/simple
+
+jobs:
+  install-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8.1.0
+
+      - name: Test with pytest
+        run: |
+          uv run pytest -sv
+
+  ruff-linting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8.1.0
+      - name: Run Ruff
+        run: uv run ruff check .
+
+  pr-preview:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8.1.0
+
+      - name: Build docs
+        run: uv run mkdocs build
+
+      - name: Deploy PR Preview
+        uses: rossjrw/pr-preview-action@v1
+        with:
+          source-dir: site
