@@ -422,11 +422,6 @@ def _render_grid_use_case_card(file_path, index=0):
                 f'<span class="grid-use-case-card__keyword-more">+{extra}</span>'
             )
 
-        expanded_keywords = "".join(
-            f'<span class="grid-use-case-card__keyword">#{esc(kw)}</span>'
-            for kw in info["keywords"]
-        )
-
         stats_html = _build_stats_html(info)
 
         coauthors_html = ""
@@ -512,10 +507,6 @@ def _render_grid_use_case_card(file_path, index=0):
     <div class="grid-use-case-card__expanded-grid">
       <div class="grid-use-case-card__section">
         {"".join(left_column)}
-        <div class="grid-use-case-card__detail">
-          <h4>Keywords</h4>
-          <div class="grid-use-case-card__keywords">{expanded_keywords}</div>
-        </div>
       </div>
       <div class="grid-use-case-card__section">
         {"".join(right_column)}
