@@ -1,6 +1,7 @@
 .pyenv/
 .venv/
 build/
+site/
 __pycache__/
 PKG-INFO
 SOURCES.txt
