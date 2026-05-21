@@ -111,10 +111,10 @@ body:
       description: Provide a link to the source code repository associated with this use case (e.g., GitHub, GitLab).
 
   - type: input
-    id: dataset_reference
+    id: nomad_resource_link
     attributes:
-      label: Dataset Reference
-      description: Provide a link to the dataset associated with this use case (e.g., DOI, NOMAD upload or entry ID)
+      label: NOMAD Resource Link
+      description: Provide one or more links to NOMAD resources related to this use case. This can include NOMAD uploads, datasets, entries, Apps, Oasis pages, search interfaces, workflows, or DOIs hosted within NOMAD. Multiple links can be provided separated by commas. The first link will be connected to the main NOMAD icon displayed on the gallery card, while additional links will be listed in the detailed view.
 
   - type: input
     id: funding_reference

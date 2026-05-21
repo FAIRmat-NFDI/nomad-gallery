@@ -51,7 +51,7 @@ jobs:
           DATA_SIZE: ${{ steps.issue-parser.outputs.issueparser_data_size }}
           PUBLICATION_REFERENCE: ${{ steps.issue-parser.outputs.issueparser_publication_reference }}
           REPO_REFERENCE: ${{ steps.issue-parser.outputs.issueparser_repo_reference }}
-          DATASET_REFERENCE: ${{ steps.issue-parser.outputs.issueparser_dataset_reference }}
+          NOMAD_RESOURCE_LINK: ${{ steps.issue-parser.outputs.issueparser_nomad_resource_link }}
           FUNDING_REFERENCE: ${{ steps.issue-parser.outputs.issueparser_funding_reference }}
           MEDIA_URL: ${{ steps.issue-parser.outputs.issueparser_media_url }}
           ESTIMATED_ACTIVE_USERS: ${{ steps.issue-parser.outputs.issueparser_estimated_active_users }}
@@ -146,7 +146,7 @@ jobs:
             const dataSize = cleanSingleLine(process.env.DATA_SIZE, 100);
             const publicationReference = cleanSingleLine(process.env.PUBLICATION_REFERENCE, 1000);
             const repositoryReference = cleanSingleLine(process.env.REPO_REFERENCE, 1000);
-            const datasetReference = cleanSingleLine(process.env.DATASET_REFERENCE, 1000);
+            const datasetReference = cleanSingleLine(process.env.NOMAD_RESOURCE_LINK, 1000);
             const fundingReference = cleanSingleLine(process.env.FUNDING_REFERENCE, 300);
             const mediaUrl = cleanSingleLine(process.env.MEDIA_URL, 1000);
             const estimatedActiveUsers = cleanSingleLine(process.env.ESTIMATED_ACTIVE_USERS, 120);
@@ -179,7 +179,7 @@ jobs:
             addListField(lines, "keywords", keywords);
             addScalarField(lines, "publication_reference", publicationReference);
             addScalarField(lines, "repository_reference", repositoryReference);
-            addScalarField(lines, "dataset_reference", datasetReference);
+            addScalarField(lines, "nomad_resource_link", datasetReference);
             addScalarField(lines, "funding_reference", fundingReference);
             addScalarField(lines, "media_url", mediaUrl);
             addScalarField(lines, "data_size", dataSize);

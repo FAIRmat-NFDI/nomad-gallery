@@ -90,7 +90,7 @@ def _normalize_use_case_info(data, body=""):
         "keywords": keywords,
         "publication": (data.get("publication_reference", "") or "").strip(),
         "funding": (data.get("funding_reference", "") or "").strip(),
-        "dataset_reference": (data.get("dataset_reference", "") or "").strip(),
+        "nomad_resource_link": (data.get("nomad_resource_link", "") or "").strip(),
         "image_name": data.get("image_name", data.get("title", "Image")),
         "image_path": image_path,
         "repo_link": repo_link,
@@ -323,7 +323,7 @@ def _build_right_column(info, escaped):
     """Build the right column detail blocks for a grid use-case card."""
     publication = escaped["publication"]
     repo_link = escaped["repo_link"]
-    dataset_reference = escaped["dataset_reference"]
+    nomad_resource_link = escaped["nomad_resource_link"]
     funding = escaped["funding"]
     media_url = escaped["media_url"]
     col = []
@@ -343,12 +343,12 @@ def _build_right_column(info, escaped):
                  rel="noopener">{repo_link}</a>
             </div>
             ''')
-    if info["dataset_reference"]:
+    if info["nomad_resource_link"]:
         col.append(f'''
             <div class="grid-use-case-card__detail">
               <h4>Dataset Reference</h4>
-              <a href="{dataset_reference}" target="_blank"
-                 rel="noopener">{dataset_reference}</a>
+              <a href="{nomad_resource_link}" target="_blank"
+                 rel="noopener">{nomad_resource_link}</a>
             </div>
             ''')
     if info["funding"]:
@@ -389,7 +389,7 @@ def _render_grid_use_case_card(file_path, index=0):
         publication = esc(info["publication"])
         repo_link = esc(info["repo_link"])
         entry_link = esc(info["entry_link"])
-        dataset_reference = esc(info["dataset_reference"])
+        nomad_resource_link = esc(info["nomad_resource_link"])
         media_url = esc(info["media_url"])
         image_path = esc(info["image_path"])
         image_name = esc(info["image_name"])
@@ -440,7 +440,7 @@ def _render_grid_use_case_card(file_path, index=0):
         escaped_vals = {
             "publication": publication,
             "repo_link": repo_link,
-            "dataset_reference": dataset_reference,
+            "nomad_resource_link": nomad_resource_link,
             "funding": funding,
             "media_url": media_url,
         }
