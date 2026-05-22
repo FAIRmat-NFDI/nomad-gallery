@@ -14,7 +14,7 @@ image_path: assets/ionic_liquids.png
 image_name: NOMAD Logo
 repo_link: https://github.com/FAIRmat-NFDI/nomad-gallery
 repo_name: NOMAD Gallery Repo
-entry_link: https://nomad-lab.eu
+nomad_resource_link: https://nomad-lab.eu
 entry_name: Live App
 media_url: https://doi.org/10.1063/5.0279946
 data_size: 1.5 TB

@@ -235,13 +235,13 @@ def render_sorted_cards(cards_dir="docs/cards"):
     return rendered_cards
 
 
-def _build_action_buttons(info, entry_link, publication, repo_link, media_url):
+def _build_action_buttons(info, nomad_resource_link, publication, repo_link, media_url):
     """Build icon-button anchor tags for a grid use-case card."""
     cls = "grid-use-case-card__icon-button"
     buttons = []
-    if info["entry_link"]:
+    if info["nomad_resource_link"]:
         buttons.append(
-            f'<a class="{cls}" href="{entry_link}"'
+            f'<a class="{cls}" href="{nomad_resource_link}"'
             f' target="_blank" rel="noopener"'
             f' title="Open in NOMAD">{_icon_nomad()}</a>'
         )
@@ -388,7 +388,6 @@ def _render_grid_use_case_card(file_path, index=0):
         funding = esc(info["funding"])
         publication = esc(info["publication"])
         repo_link = esc(info["repo_link"])
-        entry_link = esc(info["entry_link"])
         nomad_resource_link = esc(info["nomad_resource_link"])
         media_url = esc(info["media_url"])
         image_path = esc(info["image_path"])
@@ -407,7 +406,7 @@ def _render_grid_use_case_card(file_path, index=0):
             '''
 
         action_buttons = _build_action_buttons(
-            info, entry_link, publication, repo_link, media_url
+            info, nomad_resource_link, publication, repo_link, media_url
         )
 
         keyword_items = []

@@ -23,7 +23,7 @@ keywords:
   - "Machine-readable data"
   - "NOMAD app"
 entry_name: "NOMAD Catalysis App"
-entry_link: "https://nomad-lab.eu/prod/v1/gui/search/heterogeneouscatalyst"
+nomad_resource_link: "https://nomad-lab.eu/prod/v1/gui/search/heterogeneouscatalyst"
 repo_link: "https://github.com/FAIRmat-NFDI/nomad-catalysis-plugin"
 funding_reference: "Deutsche Forschungsgemeinschaft (DFG) - Project 460197019"
 data_size: "2000 entries <"

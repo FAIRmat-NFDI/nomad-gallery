@@ -146,7 +146,7 @@ jobs:
             const dataSize = cleanSingleLine(process.env.DATA_SIZE, 100);
             const publicationReference = cleanSingleLine(process.env.PUBLICATION_REFERENCE, 1000);
             const repositoryReference = cleanSingleLine(process.env.REPO_REFERENCE, 1000);
-            const datasetReference = cleanSingleLine(process.env.NOMAD_RESOURCE_LINK, 1000);
+            const nomadResourceLink = cleanSingleLine(process.env.NOMAD_RESOURCE_LINK, 1000);
             const fundingReference = cleanSingleLine(process.env.FUNDING_REFERENCE, 300);
             const mediaUrl = cleanSingleLine(process.env.MEDIA_URL, 1000);
             const estimatedActiveUsers = cleanSingleLine(process.env.ESTIMATED_ACTIVE_USERS, 120);
@@ -175,11 +175,10 @@ jobs:
             addScalarField(lines, "technique", technique);
             addListField(lines, "coauthors", contributors);
             addScalarField(lines, "image_path", imagePathRaw);
-            addScalarField(lines, "entry_link", datasetReference);
             addListField(lines, "keywords", keywords);
             addScalarField(lines, "publication_reference", publicationReference);
             addScalarField(lines, "repository_reference", repositoryReference);
-            addScalarField(lines, "nomad_resource_link", datasetReference);
+            addScalarField(lines, "nomad_resource_link", nomadResourceLink);
             addScalarField(lines, "funding_reference", fundingReference);
             addScalarField(lines, "media_url", mediaUrl);
             addScalarField(lines, "data_size", dataSize);
