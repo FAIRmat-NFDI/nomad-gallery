@@ -41,6 +41,13 @@ def _read_front_matter_from_docs(file_path):
 
 def _normalize_use_case_info(data, body=""):
     """Normalize richer use-case metadata without affecting old card logic."""
+    def _to_line_list(value):
+        if isinstance(value, list):
+            return [str(v).strip() for v in value if str(v).strip()]
+        if isinstance(value, str):
+            return [line.strip() for line in value.splitlines() if line.strip()]
+        return []
+
     coauthors = data.get("coauthors", [])
     if isinstance(coauthors, str):
         coauthors = [c.strip() for c in coauthors.split(",") if c.strip()]
@@ -62,6 +69,28 @@ def _normalize_use_case_info(data, body=""):
     entry_link = (
         data.get("entry_link") or data.get("external_url") or ""
     ).strip()
+
+    publication_references = (
+        _to_line_list(data.get("publication_references"))
+        or _to_line_list(data.get("publication_reference"))
+    )
+    repository_references = (
+        _to_line_list(data.get("repository_references"))
+        or _to_line_list(data.get("repository_reference"))
+        or _to_line_list(data.get("repo_link"))
+    )
+    dataset_references = (
+        _to_line_list(data.get("dataset_references"))
+        or _to_line_list(data.get("dataset_reference"))
+    )
+    funding_references = (
+        _to_line_list(data.get("funding_references"))
+        or _to_line_list(data.get("funding_reference"))
+    )
+    media_urls = (
+        _to_line_list(data.get("media_urls"))
+        or _to_line_list(data.get("media_url"))
+    )
 
     return {
         "title": data.get("title", "Untitled Submission"),
@@ -85,17 +114,21 @@ def _normalize_use_case_info(data, body=""):
         "data_size": (data.get("data_size", "") or "").strip(),
         "active_users": data.get("estimated_active_users", None),
         "downloads": data.get("downloads", None),
-        "media_url": (data.get("media_url", "") or "").strip(),
+        "media_url": media_urls[0] if media_urls else "",
         "coauthors": coauthors,
         "keywords": keywords,
-        "publication": (data.get("publication_reference", "") or "").strip(),
-        "funding": (data.get("funding_reference", "") or "").strip(),
-        "nomad_resource_link": (data.get("nomad_resource_link", "") or "").strip(),
+        "publication": publication_references[0] if publication_references else "",
+        "publication_references": publication_references,
+        "funding": funding_references[0] if funding_references else "",
+        "funding_references": funding_references,
+        "dataset_reference": dataset_references[0] if dataset_references else "",
+        "dataset_references": dataset_references,
         "image_name": data.get("image_name", data.get("title", "Image")),
         "image_path": image_path,
-        "repo_link": repo_link,
+        "repo_link": repository_references[0] if repository_references else repo_link,
+        "repository_references": repository_references,
         "repo_name": (data.get("repo_name", "") or "").strip() or repo_link,
-        "entry_link": entry_link,
+        "entry_link": entry_link or (dataset_references[0] if dataset_references else ""),
         "entry_name": (data.get("entry_name", "") or "").strip() or entry_link,
     }
 
@@ -326,44 +359,74 @@ def _build_right_column(info, escaped):
     nomad_resource_link = escaped["nomad_resource_link"]
     funding = escaped["funding"]
     media_url = escaped["media_url"]
+    publication_references = escaped["publication_references"]
+    repository_references = escaped["repository_references"]
+    dataset_references = escaped["dataset_references"]
+    funding_references = escaped["funding_references"]
+    media_urls = escaped["media_urls"]
     col = []
     if info["publication"]:
+        publication_extra = "".join(
+            f'<li><a href="{ref}" target="_blank" rel="noopener">{ref}</a></li>'
+            for ref in publication_references[1:]
+        )
         col.append(f'''
             <div class="grid-use-case-card__detail">
               <h4>Publication Reference</h4>
               <a href="{publication}" target="_blank"
                  rel="noopener">{publication}</a>
+              {"<ul>" + publication_extra + "</ul>" if publication_extra else ""}
             </div>
             ''')
     if info["repo_link"]:
+        repository_extra = "".join(
+            f'<li><a href="{ref}" target="_blank" rel="noopener">{ref}</a></li>'
+            for ref in repository_references[1:]
+        )
         col.append(f'''
             <div class="grid-use-case-card__detail">
               <h4>Repository Reference</h4>
               <a href="{repo_link}" target="_blank"
                  rel="noopener">{repo_link}</a>
+              {"<ul>" + repository_extra + "</ul>" if repository_extra else ""}
             </div>
             ''')
-    if info["nomad_resource_link"]:
+    if info["dataset_reference"]:
+        dataset_extra = "".join(
+            f'<li><a href="{ref}" target="_blank" rel="noopener">{ref}</a></li>'
+            for ref in dataset_references[1:]
+        )
         col.append(f'''
             <div class="grid-use-case-card__detail">
               <h4>Dataset Reference</h4>
-              <a href="{nomad_resource_link}" target="_blank"
-                 rel="noopener">{nomad_resource_link}</a>
+              <a href="{dataset_reference}" target="_blank"
+                 rel="noopener">{dataset_reference}</a>
+              {"<ul>" + dataset_extra + "</ul>" if dataset_extra else ""}
             </div>
             ''')
     if info["funding"]:
+        funding_extra = "".join(
+            f"<li>{ref}</li>"
+            for ref in funding_references[1:]
+        )
         col.append(f'''
             <div class="grid-use-case-card__detail">
               <h4>Funding Reference</h4>
               <p>{funding}</p>
+              {"<ul>" + funding_extra + "</ul>" if funding_extra else ""}
             </div>
             ''')
     if info["media_url"]:
+        media_extra = "".join(
+            f'<li><a href="{ref}" target="_blank" rel="noopener">{ref}</a></li>'
+            for ref in media_urls[1:]
+        )
         col.append(f'''
             <div class="grid-use-case-card__detail">
               <h4>Media URL</h4>
               <a href="{media_url}" target="_blank"
                  rel="noopener">{media_url}</a>
+              {"<ul>" + media_extra + "</ul>" if media_extra else ""}
             </div>
             ''')
     return col
@@ -438,10 +501,15 @@ def _render_grid_use_case_card(file_path, index=0):
         )
         escaped_vals = {
             "publication": publication,
+            "publication_references": [esc(v) for v in info.get("publication_references", [])],
             "repo_link": repo_link,
-            "nomad_resource_link": nomad_resource_link,
+            "repository_references": [esc(v) for v in info.get("repository_references", [])],
+            "dataset_reference": dataset_reference,
+            "dataset_references": [esc(v) for v in info.get("dataset_references", [])],
             "funding": funding,
+            "funding_references": [esc(v) for v in info.get("funding_references", [])],
             "media_url": media_url,
+            "media_urls": [esc(v) for v in info.get("media_urls", [])],
         }
         right_column = _build_right_column(info, escaped_vals)
 

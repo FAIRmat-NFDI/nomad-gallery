@@ -98,35 +98,50 @@ body:
       description: Add keywords (one per line).
 
   # 6. References
-  - type: input
+  - type: textarea
     id: publication_reference
     attributes:
-      label: Publication Reference
-      description: Provide the DOI or link to a publication related to this use case (if available).
+      label: Publication References
+      description: Provide one or more DOIs or publication links, one per line (optional). The first link is highlighted on the gallery card; additional links appear in the detailed view.
+      placeholder: |
+        https://doi.org/...
+        https://example.org/publication
 
-  - type: input
+  - type: textarea
     id: repo_reference
     attributes:
-      label: Repository Reference
-      description: Provide a link to the source code repository associated with this use case (e.g., GitHub, GitLab).
+      label: Repository References
+      description: Provide one or more source repository links, one per line (e.g., GitHub, GitLab). The first link is highlighted on the gallery card; additional links appear in the detailed view.
+      placeholder: |
+        https://github.com/org/repo
+        https://gitlab.com/group/project
 
-  - type: input
-    id: nomad_resource_link
+  - type: textarea
+    id: dataset_reference
     attributes:
-      label: NOMAD Resource Link
-      description: Provide one or more links to NOMAD resources related to this use case. This can include NOMAD uploads, datasets, entries, Apps, Oasis pages, search interfaces, workflows, or DOIs hosted within NOMAD. Multiple links can be provided separated by commas. The first link will be connected to the main NOMAD icon displayed on the gallery card, while additional links will be listed in the detailed view.
+      label: Dataset References
+      description: Provide one or more NOMAD/dataset links, one per line (DOI, upload, app, or Oasis entry). The first link is highlighted on the gallery card; additional links appear in the detailed view.
+      placeholder: |
+        https://nomad-lab.eu/prod/...
+        https://doi.org/...
 
-  - type: input
+  - type: textarea
     id: funding_reference
     attributes:
-      label: Funding Reference
-      description: Grant number or agency.
+      label: Funding References
+      description: Provide funding agency and grant/project details, one per line. Example: DFG – FAIRmat (NFDI 39/1). Multiple funders can be listed on separate lines and will appear in the detailed view.
+      placeholder: |
+        DFG - Project 460197019
+        Horizon Europe - Grant 123456
 
-  - type: input
+  - type: textarea
     id: media_url
     attributes:
-      label: Media URL
-      description: Provide a link to a video, animation, or GIF illustrating the use case (optional).
+      label: Media URLs
+      description: Provide one or more media links, one per line (video, animation, GIF, presentation). The first link is highlighted on the gallery card; additional links appear in the detailed view.
+      placeholder: |
+        https://example.org/demo-video
+        https://example.org/animation.gif
 
   # 7. Metrics
   - type: input
