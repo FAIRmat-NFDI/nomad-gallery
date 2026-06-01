@@ -108,6 +108,13 @@ jobs:
             // Return first item from list or empty string.
             function firstOrEmpty(values) {
               return values && values.length > 0 ? values[0] : "";
+            // Split comma-separated input into cleaned list.
+            function toCommaList(value, maxItems = 30) {
+              return cleanSingleLine(value, 6000)
+                .split(",")
+                .map((item) => item.trim())
+                .filter(Boolean)
+                .slice(0, maxItems);
             }
 
             // Add YAML key only when value exists.
@@ -144,8 +151,8 @@ jobs:
             const country = cleanSingleLine(process.env.COUNTRY, 120);
             const description = cleanMultiline(process.env.DESCRIPTION, 10000);
             const imagePathRaw = cleanSingleLine(process.env.IMAGE_URL, 1000);
-            const contributors = toList(process.env.CONTRIBUTORS, 30);
-            const keywords = toList(process.env.KEYWORDS, 30);
+            const contributors = toCommaList(process.env.CONTRIBUTORS, 30);
+            const keywords = toCommaList(process.env.KEYWORDS, 30);
             const methodologyType = cleanSingleLine(process.env.METHODOLOGY, 80);
             const technique = cleanSingleLine(process.env.TECHNIQUE, 400);
             const dataSize = cleanSingleLine(process.env.DATA_SIZE, 100);

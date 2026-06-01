@@ -58,11 +58,12 @@ body:
       required: true
 
   # 3. Authors (Coauthors)
-  - type: textarea
+  - type: input
     id: contributors
     attributes:
       label: Contributors
-      description: List additional contributors involved in this use case or submission (one per line).
+      description: List all contributors involved in this use case using the format first name last name, separated by commas. If you, as the submitter, are also a contributor to the work, please include your name here as well.
+      placeholder: Firstname Lastname, Firstname Lastname, Firstname Lastname
 
   # 4. Methodology
   - type: dropdown
@@ -91,11 +92,12 @@ body:
       placeholder: "e.g., 50 GB"
       description: Approximate size of the dataset associated with this use case.
 
-  - type: textarea
+  - type: input
     id: keywords
     attributes:
       label: Keywords
-      description: Add keywords (one per line).
+      description: Add keywords related to this use case, separated by commas. Keywords can describe the scientific domain, methods, software, workflows, instruments, materials, FAIR aspects, or NOMAD features relevant to the submission.
+      placeholder: Perovskites, DFT, Workflow automation, NOMAD App
 
   # 6. References
   - type: textarea
