@@ -12,6 +12,7 @@ coauthors:
   - "Hampus Näsström"
   - "Jose Pizarro Blanco"
 image_path: "assets/images/cards/battery-database.png"
+publication_reference: "https://www.nature.com/articles/s41597-020-00602-2"
 keywords:
   - "Battery database"
   - "NOMAD app"
