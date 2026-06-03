@@ -6,5 +6,6 @@ submission_date: 2025-02-15
 image_name: MARTINI Lipid Bilayer
 image_path: assets/CG_bilayer.png
 entry_name: https://nomad-lab.eu/prod/v1/develop/gui/search/entries/entry/id/zDUCtCQEufLerC1c6aJR22JdTdKU
-nomad_resource_link: https://nomad-lab.eu/prod/v1/develop/gui/search/entries/entry/id/zDUCtCQEufLerC1c6aJR22JdTdKU
+nomad_resource_links:
+  - https://nomad-lab.eu/prod/v1/develop/gui/search/entries/entry/id/zDUCtCQEufLerC1c6aJR22JdTdKU
 ---

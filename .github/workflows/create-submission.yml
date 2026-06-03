@@ -51,7 +51,7 @@ jobs:
           DATA_SIZE: ${{ steps.issue-parser.outputs.issueparser_data_size }}
           PUBLICATION_REFERENCE: ${{ steps.issue-parser.outputs.issueparser_publication_reference }}
           REPO_REFERENCE: ${{ steps.issue-parser.outputs.issueparser_repo_reference }}
-          NOMAD_RESOURCE_LINK: ${{ steps.issue-parser.outputs.issueparser_nomad_resource_link }}
+          NOMAD_RESOURCE_LINKS: ${{ steps.issue-parser.outputs.issueparser_nomad_resource_links }}
           FUNDING_REFERENCE: ${{ steps.issue-parser.outputs.issueparser_funding_reference }}
           MEDIA_URL: ${{ steps.issue-parser.outputs.issueparser_media_url }}
           ESTIMATED_ACTIVE_USERS: ${{ steps.issue-parser.outputs.issueparser_estimated_active_users }}
@@ -108,6 +108,8 @@ jobs:
             // Return first item from list or empty string.
             function firstOrEmpty(values) {
               return values && values.length > 0 ? values[0] : "";
+            }
+
             // Split comma-separated input into cleaned list.
             function toCommaList(value, maxItems = 30) {
               return cleanSingleLine(value, 6000)
@@ -158,7 +160,7 @@ jobs:
             const dataSize = cleanSingleLine(process.env.DATA_SIZE, 100);
             const publicationReferences = toList(process.env.PUBLICATION_REFERENCE, 30);
             const repositoryReferences = toList(process.env.REPO_REFERENCE, 30);
-            const datasetReferences = toList(process.env.DATASET_REFERENCE, 30);
+            const nomadResourceLinks = toList(process.env.NOMAD_RESOURCE_LINKS, 30);
             const fundingReferences = toList(process.env.FUNDING_REFERENCE, 30);
             const mediaUrls = toList(process.env.MEDIA_URL, 30);
             const estimatedActiveUsers = cleanSingleLine(process.env.ESTIMATED_ACTIVE_USERS, 120);
@@ -187,16 +189,15 @@ jobs:
             addScalarField(lines, "technique", technique);
             addListField(lines, "coauthors", contributors);
             addScalarField(lines, "image_path", imagePathRaw);
-            addScalarField(lines, "entry_link", firstOrEmpty(datasetReferences));
+            addScalarField(lines, "entry_link", firstOrEmpty(nomadResourceLinks));
             addListField(lines, "keywords", keywords);
             addScalarField(lines, "publication_reference", firstOrEmpty(publicationReferences));
             addScalarField(lines, "repository_reference", firstOrEmpty(repositoryReferences));
-            addScalarField(lines, "dataset_reference", firstOrEmpty(datasetReferences));
+            addListField(lines, "nomad_resource_links", nomadResourceLinks);
             addScalarField(lines, "funding_reference", firstOrEmpty(fundingReferences));
             addScalarField(lines, "media_url", firstOrEmpty(mediaUrls));
             addListField(lines, "publication_references", publicationReferences);
             addListField(lines, "repository_references", repositoryReferences);
-            addListField(lines, "dataset_references", datasetReferences);
             addListField(lines, "funding_references", fundingReferences);
             addListField(lines, "media_urls", mediaUrls);
             addScalarField(lines, "data_size", dataSize);

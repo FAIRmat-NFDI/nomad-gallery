@@ -119,21 +119,21 @@ body:
         https://gitlab.com/group/project
 
   - type: textarea
-    id: dataset_reference
+    id: nomad_resource_links
     attributes:
-      label: Dataset References
-      description: Provide one or more NOMAD/dataset links, one per line (DOI, upload, app, or Oasis entry). The first link is highlighted on the gallery card; additional links appear in the detailed view.
+      label: NOMAD Resource Links
+      description: Provide one or more NOMAD resource links, one per line (upload, app, or Oasis entry). The first link is highlighted on the gallery card; additional links appear in the detailed view.
       placeholder: |
         https://nomad-lab.eu/prod/...
-        https://doi.org/...
+        https://nomad-lab.eu/oasis/...
 
   - type: textarea
     id: funding_reference
     attributes:
       label: Funding References
-      description: Provide funding agency and grant/project details, one per line. Example: DFG – FAIRmat (NFDI 39/1). Multiple funders can be listed on separate lines and will appear in the detailed view.
+      description: Provide funding agency and grant/project details, one per line. Multiple funders can be listed on separate lines and will appear in the detailed view.
       placeholder: |
-        DFG - Project 460197019
+        DFG - Project 123456
         Horizon Europe - Grant 123456
 
   - type: textarea

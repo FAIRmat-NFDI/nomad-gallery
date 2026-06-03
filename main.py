@@ -79,10 +79,7 @@ def _normalize_use_case_info(data, body=""):
         or _to_line_list(data.get("repository_reference"))
         or _to_line_list(data.get("repo_link"))
     )
-    dataset_references = (
-        _to_line_list(data.get("dataset_references"))
-        or _to_line_list(data.get("dataset_reference"))
-    )
+    nomad_resource_links = _to_line_list(data.get("nomad_resource_links"))
     funding_references = (
         _to_line_list(data.get("funding_references"))
         or _to_line_list(data.get("funding_reference"))
@@ -121,15 +118,15 @@ def _normalize_use_case_info(data, body=""):
         "publication_references": publication_references,
         "funding": funding_references[0] if funding_references else "",
         "funding_references": funding_references,
-        "dataset_reference": dataset_references[0] if dataset_references else "",
-        "dataset_references": dataset_references,
+        "nomad_resource_links": nomad_resource_links,
         "image_name": data.get("image_name", data.get("title", "Image")),
         "image_path": image_path,
         "repo_link": repository_references[0] if repository_references else repo_link,
         "repository_references": repository_references,
         "repo_name": (data.get("repo_name", "") or "").strip() or repo_link,
         "entry_link": (
-            entry_link or (dataset_references[0] if dataset_references else "")
+            entry_link
+            or (nomad_resource_links[0] if nomad_resource_links else "")
         ),
         "entry_name": (data.get("entry_name", "") or "").strip() or entry_link,
     }
@@ -270,13 +267,13 @@ def render_sorted_cards(cards_dir="docs/cards"):
     return rendered_cards
 
 
-def _build_action_buttons(info, nomad_resource_link, publication, repo_link, media_url):
+def _build_action_buttons(info, primary_nomad_resource_link, publication, repo_link, media_url):
     """Build icon-button anchor tags for a grid use-case card."""
     cls = "grid-use-case-card__icon-button"
     buttons = []
-    if info["nomad_resource_link"]:
+    if info["nomad_resource_links"]:
         buttons.append(
-            f'<a class="{cls}" href="{nomad_resource_link}"'
+            f'<a class="{cls}" href="{primary_nomad_resource_link}"'
             f' target="_blank" rel="noopener"'
             f' title="Open in NOMAD">{_icon_nomad()}</a>'
         )
@@ -358,12 +355,11 @@ def _build_right_column(info, escaped):
     """Build the right column detail blocks for a grid use-case card."""
     publication = escaped["publication"]
     repo_link = escaped["repo_link"]
-    dataset_reference = escaped["dataset_reference"]
     funding = escaped["funding"]
     media_url = escaped["media_url"]
     publication_references = escaped["publication_references"]
     repository_references = escaped["repository_references"]
-    dataset_references = escaped["dataset_references"]
+    nomad_resource_links = escaped["nomad_resource_links"]
     funding_references = escaped["funding_references"]
     media_urls = escaped["media_urls"]
     col = []
@@ -393,16 +389,16 @@ def _build_right_column(info, escaped):
               {"<ul>" + repository_extra + "</ul>" if repository_extra else ""}
             </div>
             ''')
-    if info["dataset_reference"]:
+    if info["nomad_resource_links"]:
         dataset_extra = "".join(
             f'<li><a href="{ref}" target="_blank" rel="noopener">{ref}</a></li>'
-            for ref in dataset_references[1:]
+            for ref in nomad_resource_links[1:]
         )
         col.append(f'''
             <div class="grid-use-case-card__detail">
-              <h4>Dataset Reference</h4>
-              <a href="{dataset_reference}" target="_blank"
-                 rel="noopener">{dataset_reference}</a>
+              <h4>NOMAD Resource Links</h4>
+              <a href="{nomad_resource_links[0]}" target="_blank"
+                 rel="noopener">{nomad_resource_links[0]}</a>
               {"<ul>" + dataset_extra + "</ul>" if dataset_extra else ""}
             </div>
             ''')
@@ -453,7 +449,7 @@ def _render_grid_use_case_card(file_path, index=0):
         funding = esc(info["funding"])
         publication = esc(info["publication"])
         repo_link = esc(info["repo_link"])
-        dataset_reference = esc(info["dataset_reference"])
+        primary_nomad_resource_link = esc(info["nomad_resource_links"][0]) if info["nomad_resource_links"] else ""
         media_url = esc(info["media_url"])
         image_path = esc(info["image_path"])
         image_name = esc(info["image_name"])
@@ -471,7 +467,7 @@ def _render_grid_use_case_card(file_path, index=0):
             '''
 
         action_buttons = _build_action_buttons(
-            info, dataset_reference, publication, repo_link, media_url
+            info, primary_nomad_resource_link, publication, repo_link, media_url
         )
 
         keyword_items = []
@@ -510,9 +506,8 @@ def _render_grid_use_case_card(file_path, index=0):
             "repository_references": [
                 esc(v) for v in info.get("repository_references", [])
             ],
-            "dataset_reference": dataset_reference,
-            "dataset_references": [
-                esc(v) for v in info.get("dataset_references", [])
+            "nomad_resource_links": [
+                esc(v) for v in info.get("nomad_resource_links", [])
             ],
             "funding": funding,
             "funding_references": [
