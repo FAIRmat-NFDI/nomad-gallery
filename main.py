@@ -128,7 +128,9 @@ def _normalize_use_case_info(data, body=""):
         "repo_link": repository_references[0] if repository_references else repo_link,
         "repository_references": repository_references,
         "repo_name": (data.get("repo_name", "") or "").strip() or repo_link,
-        "entry_link": entry_link or (dataset_references[0] if dataset_references else ""),
+        "entry_link": (
+            entry_link or (dataset_references[0] if dataset_references else "")
+        ),
         "entry_name": (data.get("entry_name", "") or "").strip() or entry_link,
     }
 
@@ -356,7 +358,7 @@ def _build_right_column(info, escaped):
     """Build the right column detail blocks for a grid use-case card."""
     publication = escaped["publication"]
     repo_link = escaped["repo_link"]
-    nomad_resource_link = escaped["nomad_resource_link"]
+    dataset_reference = escaped["dataset_reference"]
     funding = escaped["funding"]
     media_url = escaped["media_url"]
     publication_references = escaped["publication_references"]
@@ -451,7 +453,7 @@ def _render_grid_use_case_card(file_path, index=0):
         funding = esc(info["funding"])
         publication = esc(info["publication"])
         repo_link = esc(info["repo_link"])
-        nomad_resource_link = esc(info["nomad_resource_link"])
+        dataset_reference = esc(info["dataset_reference"])
         media_url = esc(info["media_url"])
         image_path = esc(info["image_path"])
         image_name = esc(info["image_name"])
@@ -469,7 +471,7 @@ def _render_grid_use_case_card(file_path, index=0):
             '''
 
         action_buttons = _build_action_buttons(
-            info, nomad_resource_link, publication, repo_link, media_url
+            info, dataset_reference, publication, repo_link, media_url
         )
 
         keyword_items = []
@@ -501,13 +503,21 @@ def _render_grid_use_case_card(file_path, index=0):
         )
         escaped_vals = {
             "publication": publication,
-            "publication_references": [esc(v) for v in info.get("publication_references", [])],
+            "publication_references": [
+                esc(v) for v in info.get("publication_references", [])
+            ],
             "repo_link": repo_link,
-            "repository_references": [esc(v) for v in info.get("repository_references", [])],
+            "repository_references": [
+                esc(v) for v in info.get("repository_references", [])
+            ],
             "dataset_reference": dataset_reference,
-            "dataset_references": [esc(v) for v in info.get("dataset_references", [])],
+            "dataset_references": [
+                esc(v) for v in info.get("dataset_references", [])
+            ],
             "funding": funding,
-            "funding_references": [esc(v) for v in info.get("funding_references", [])],
+            "funding_references": [
+                esc(v) for v in info.get("funding_references", [])
+            ],
             "media_url": media_url,
             "media_urls": [esc(v) for v in info.get("media_urls", [])],
         }
