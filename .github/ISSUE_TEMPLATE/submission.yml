@@ -119,13 +119,13 @@ body:
         https://gitlab.com/group/project
 
   - type: textarea
-    id: dataset_reference
+    id: nomad_resource_link
     attributes:
-      label: Dataset References
-      description: Provide one or more NOMAD/dataset links, one per line (DOI, upload, app, or Oasis entry). The first link is highlighted on the gallery card; additional links appear in the detailed view.
+      label: NOMAD Resource Links
+      description: Provide one or more NOMAD resource links, one per line (upload, app, or Oasis entry). The first link is highlighted on the gallery card; additional links appear in the detailed view.
       placeholder: |
         https://nomad-lab.eu/prod/...
-        https://doi.org/...
+        https://nomad-lab.eu/oasis/...
 
   - type: textarea
     id: funding_reference
