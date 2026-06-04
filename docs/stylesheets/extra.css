@@ -693,14 +693,6 @@
   line-height: 1.6;
 }
 
-.grid-use-case-card__keyword-more {
-  font-family: "Titillium Web", sans-serif;
-  font-size: 11px;
-  color: rgba(0, 0, 0, 0.40);
-  padding: 2px 4px;
-  align-self: center;
-}
-
 /* Submitter + date footer */
 .grid-use-case-card__meta {
   display: flex;

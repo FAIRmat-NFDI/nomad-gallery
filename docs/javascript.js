@@ -463,16 +463,6 @@
             }
             const otherDesc = other.querySelector(".grid-use-case-card__description");
             if (otherDesc) otherDesc.classList.add("is-collapsed");
-            const otherKwRow = other.querySelector(".grid-use-case-card__body .grid-use-case-card__keywords");
-            if (otherKwRow) {
-              Array.from(otherKwRow.children).forEach((el, i) => {
-                if (el.classList.contains("grid-use-case-card__keyword-more")) {
-                  el.style.display = "";
-                } else if (i >= 4) {
-                  el.style.display = "none";
-                }
-              });
-            }
             // Restore DOM position if it was swapped
             if (other._origNextSibling !== undefined && other._origNextSibling !== null) {
               grid.insertBefore(other, other._origNextSibling);
@@ -519,17 +509,6 @@
         const desc = card.querySelector(".grid-use-case-card__description");
         if (desc) desc.classList.toggle("is-collapsed", !expanded);
 
-        // Show all keywords when expanded, hide extras when collapsed
-        const kwRow = card.querySelector(".grid-use-case-card__body .grid-use-case-card__keywords");
-        if (kwRow) {
-          Array.from(kwRow.children).forEach((el, i) => {
-            if (el.classList.contains("grid-use-case-card__keyword-more")) {
-              el.style.display = expanded ? "none" : "";
-            } else if (i >= 4) {
-              el.style.display = expanded ? "" : "none";
-            }
-          });
-        }
       });
     });
   }

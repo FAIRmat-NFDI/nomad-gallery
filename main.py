@@ -6,7 +6,6 @@ from pathlib import Path
 import yaml
 
 MIN_FRONT_MATTER_PARTS = 3
-MAX_SHOWN_KEYWORDS = 4
 
 
 def esc(x):
@@ -467,15 +466,9 @@ def _render_grid_use_case_card(file_path, index=0):
         )
 
         keyword_items = []
-        shown_keywords = info["keywords"][:MAX_SHOWN_KEYWORDS]
-        for kw in shown_keywords:
+        for kw in info["keywords"]:
             keyword_items.append(
                 f'<span class="grid-use-case-card__keyword">#{esc(kw)}</span>'
-            )
-        if len(info["keywords"]) > MAX_SHOWN_KEYWORDS:
-            extra = len(info["keywords"]) - MAX_SHOWN_KEYWORDS
-            keyword_items.append(
-                f'<span class="grid-use-case-card__keyword-more">+{extra}</span>'
             )
 
         stats_html = _build_stats_html(info)

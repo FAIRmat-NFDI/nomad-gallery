@@ -205,13 +205,6 @@
   color: var(--text-muted);
 }
 
-.use-case-card__keyword-more {
-  align-self: center;
-  padding: 0 4px;
-  font-size: 11px;
-  color: rgba(0,0,0,0.4);
-}
-
 .use-case-card__meta {
   display: flex;
   align-items: center;
