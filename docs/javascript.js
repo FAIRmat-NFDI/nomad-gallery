@@ -437,6 +437,58 @@
    Explore grid cards
    ========================================================= */
 (function () {
+  function buildGridCardUrl(card) {
+    const url = new URL(window.location.href);
+    url.hash = card.id;
+    return url.toString();
+  }
+
+  function fallbackCopyText(text) {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.setAttribute("readonly", "");
+    textarea.style.position = "fixed";
+    textarea.style.top = "-9999px";
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      return document.execCommand("copy");
+    } finally {
+      document.body.removeChild(textarea);
+    }
+  }
+
+  async function copyText(text) {
+    const clipboard = window.navigator?.clipboard;
+
+    if (clipboard && window.isSecureContext) {
+      try {
+        await clipboard.writeText(text);
+        return true;
+      } catch {
+        return fallbackCopyText(text);
+      }
+    }
+    return fallbackCopyText(text);
+  }
+
+  function openGridCardFromHash() {
+    const id = decodeURIComponent(window.location.hash.replace(/^#/, ""));
+    if (!id || !id.startsWith("grid-card-")) return;
+
+    const card = document.getElementById(id);
+    if (!card) return;
+
+    const toggle = card.querySelector(".grid-use-case-card__toggle");
+    if (toggle && !card.classList.contains("is-expanded")) {
+      toggle.click();
+    }
+
+    requestAnimationFrame(() => {
+      card.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
+
   function initGridUseCaseCards() {
     document.querySelectorAll(".grid-use-case-card").forEach((card) => {
       if (card.dataset.gridCardInit === "true") return;
@@ -444,6 +496,41 @@
 
       const button = card.querySelector(".grid-use-case-card__toggle");
       if (!button) return;
+
+      const shareButton = card.querySelector(".grid-use-case-card__share");
+      if (shareButton) {
+        shareButton.addEventListener("click", async () => {
+          const previousLabel = shareButton.getAttribute("aria-label") || "Copy link";
+          const previousTitle = shareButton.getAttribute("title") || "Copy link";
+          let copied = false;
+
+          try {
+            copied = await copyText(buildGridCardUrl(card));
+          } catch {
+            copied = false;
+          }
+
+          shareButton.classList.toggle("is-copied", copied);
+          shareButton.setAttribute(
+            "aria-label",
+            copied ? "Copied card link" : "Could not copy card link"
+          );
+          shareButton.setAttribute(
+            "title",
+            copied ? "Copied link" : "Could not copy link"
+          );
+          shareButton.dataset.shareFeedback = copied ? "Copied!" : "Copy failed";
+          shareButton.classList.add("has-feedback");
+
+          window.setTimeout(() => {
+            shareButton.classList.remove("is-copied");
+            shareButton.classList.remove("has-feedback");
+            delete shareButton.dataset.shareFeedback;
+            shareButton.setAttribute("aria-label", previousLabel);
+            shareButton.setAttribute("title", previousTitle);
+          }, 1600);
+        });
+      }
 
       button.addEventListener("click", () => {
         const grid = card.parentElement;
@@ -516,12 +603,19 @@
   if (typeof window.document$ !== "undefined" && window.document$?.subscribe) {
     window.document$.subscribe(() => {
       initGridUseCaseCards();
+      openGridCardFromHash();
     });
   }
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initGridUseCaseCards);
+    document.addEventListener("DOMContentLoaded", () => {
+      initGridUseCaseCards();
+      openGridCardFromHash();
+    });
   } else {
     initGridUseCaseCards();
+    openGridCardFromHash();
   }
+
+  window.addEventListener("hashchange", openGridCardFromHash);
 })();

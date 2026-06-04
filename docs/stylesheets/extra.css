@@ -472,6 +472,7 @@
   background: rgba(255, 255, 255, 0.95);
   border-radius: 16px;
   overflow: hidden;
+  scroll-margin-top: 80px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   transition: box-shadow 0.2s ease;
   display: flex;
@@ -717,10 +718,15 @@
   height: 12px;
 }
 
-/* View Details / Show Less button */
-.grid-use-case-card__toggle {
-  width: 100%;
+/* View Details / Share controls */
+.grid-use-case-card__controls {
+  display: flex;
+  gap: 8px;
   margin-top: auto;
+}
+
+.grid-use-case-card__toggle {
+  flex: 1 1 auto;
   border: 0;
   border-radius: 8px;
   background: #2a4cdf;
@@ -737,14 +743,71 @@
   transition: background 0.15s ease;
 }
 
+.grid-use-case-card__share {
+  position: relative;
+  flex: 0 0 40px;
+  width: 40px;
+  border: 1px solid rgba(42, 76, 223, 0.25);
+  border-radius: 8px;
+  background: #fff;
+  color: #2a4cdf;
+  padding: 0;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
 .grid-use-case-card__toggle:hover {
   background: #1e3cb8;
+}
+
+.grid-use-case-card__share:hover,
+.grid-use-case-card__share.is-copied {
+  background: rgba(42, 76, 223, 0.08);
+  border-color: rgba(42, 76, 223, 0.45);
+}
+
+.grid-use-case-card__share.has-feedback::after {
+  content: attr(data-share-feedback);
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 8px);
+  z-index: 5;
+  white-space: nowrap;
+  border-radius: 999px;
+  background: rgba(31, 36, 48, 0.94);
+  color: #fff;
+  padding: 4px 8px;
+  font-family: "Titillium Web", sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  pointer-events: none;
+}
+
+.grid-use-case-card__share.has-feedback::before {
+  content: "";
+  position: absolute;
+  right: 14px;
+  bottom: calc(100% + 3px);
+  z-index: 5;
+  border: 5px solid transparent;
+  border-top-color: rgba(31, 36, 48, 0.94);
+  pointer-events: none;
 }
 
 .grid-use-case-card__toggle svg {
   width: 14px;
   height: 14px;
   transition: transform 0.25s ease;
+}
+
+.grid-use-case-card__share svg {
+  width: 16px;
+  height: 16px;
 }
 
 .grid-use-case-card.is-expanded .grid-use-case-card__toggle svg {
