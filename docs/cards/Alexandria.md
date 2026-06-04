@@ -24,5 +24,6 @@ keywords:
   - High-throughput Calculations
   - PBEsol
   - PBE
-publication_reference: https://alexandria.icams.rub.de/
+publication_references:
+  - https://alexandria.icams.rub.de/
 ---

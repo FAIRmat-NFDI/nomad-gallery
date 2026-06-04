@@ -49,11 +49,11 @@ jobs:
           METHODOLOGY: ${{ steps.issue-parser.outputs.issueparser_methodology_type }}
           TECHNIQUE: ${{ steps.issue-parser.outputs.issueparser_technique }}
           DATA_SIZE: ${{ steps.issue-parser.outputs.issueparser_data_size }}
-          PUBLICATION_REFERENCE: ${{ steps.issue-parser.outputs.issueparser_publication_reference }}
-          REPO_REFERENCE: ${{ steps.issue-parser.outputs.issueparser_repo_reference }}
+          PUBLICATION_REFERENCES: ${{ steps.issue-parser.outputs.issueparser_publication_references }}
+          REPOSITORY_REFERENCES: ${{ steps.issue-parser.outputs.issueparser_repository_references }}
           NOMAD_RESOURCE_LINKS: ${{ steps.issue-parser.outputs.issueparser_nomad_resource_links }}
-          FUNDING_REFERENCE: ${{ steps.issue-parser.outputs.issueparser_funding_reference }}
-          MEDIA_URL: ${{ steps.issue-parser.outputs.issueparser_media_url }}
+          FUNDING_REFERENCES: ${{ steps.issue-parser.outputs.issueparser_funding_references }}
+          MEDIA_URLS: ${{ steps.issue-parser.outputs.issueparser_media_urls }}
           ESTIMATED_ACTIVE_USERS: ${{ steps.issue-parser.outputs.issueparser_estimated_active_users }}
           DOWNLOADS: ${{ steps.issue-parser.outputs.issueparser_downloads }}
         with:
@@ -158,11 +158,11 @@ jobs:
             const methodologyType = cleanSingleLine(process.env.METHODOLOGY, 80);
             const technique = cleanSingleLine(process.env.TECHNIQUE, 400);
             const dataSize = cleanSingleLine(process.env.DATA_SIZE, 100);
-            const publicationReferences = toList(process.env.PUBLICATION_REFERENCE, 30);
-            const repositoryReferences = toList(process.env.REPO_REFERENCE, 30);
+            const publicationReferences = toList(process.env.PUBLICATION_REFERENCES, 30);
+            const repositoryReferences = toList(process.env.REPOSITORY_REFERENCES, 30);
             const nomadResourceLinks = toList(process.env.NOMAD_RESOURCE_LINKS, 30);
-            const fundingReferences = toList(process.env.FUNDING_REFERENCE, 30);
-            const mediaUrls = toList(process.env.MEDIA_URL, 30);
+            const fundingReferences = toList(process.env.FUNDING_REFERENCES, 30);
+            const mediaUrls = toList(process.env.MEDIA_URLS, 30);
             const estimatedActiveUsers = cleanSingleLine(process.env.ESTIMATED_ACTIVE_USERS, 120);
             const downloads = cleanSingleLine(process.env.DOWNLOADS, 120);
 
@@ -191,11 +191,7 @@ jobs:
             addScalarField(lines, "image_path", imagePathRaw);
             addScalarField(lines, "entry_link", firstOrEmpty(nomadResourceLinks));
             addListField(lines, "keywords", keywords);
-            addScalarField(lines, "publication_reference", firstOrEmpty(publicationReferences));
-            addScalarField(lines, "repository_reference", firstOrEmpty(repositoryReferences));
             addListField(lines, "nomad_resource_links", nomadResourceLinks);
-            addScalarField(lines, "funding_reference", firstOrEmpty(fundingReferences));
-            addScalarField(lines, "media_url", firstOrEmpty(mediaUrls));
             addListField(lines, "publication_references", publicationReferences);
             addListField(lines, "repository_references", repositoryReferences);
             addListField(lines, "funding_references", fundingReferences);

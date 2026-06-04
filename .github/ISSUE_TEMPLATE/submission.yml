@@ -101,7 +101,7 @@ body:
 
   # 6. References
   - type: textarea
-    id: publication_reference
+    id: publication_references
     attributes:
       label: Publication References
       description: Provide one or more DOIs or publication links, one per line (optional). The first link is highlighted on the gallery card; additional links appear in the detailed view.
@@ -110,7 +110,7 @@ body:
         https://example.org/publication
 
   - type: textarea
-    id: repo_reference
+    id: repository_references
     attributes:
       label: Repository References
       description: Provide one or more source repository links, one per line (e.g., GitHub, GitLab). The first link is highlighted on the gallery card; additional links appear in the detailed view.
@@ -128,7 +128,7 @@ body:
         https://nomad-lab.eu/oasis/...
 
   - type: textarea
-    id: funding_reference
+    id: funding_references
     attributes:
       label: Funding References
       description: Provide funding agency and grant/project details, one per line. Multiple funders can be listed on separate lines and will appear in the detailed view.
@@ -137,7 +137,7 @@ body:
         Horizon Europe - Grant 123456
 
   - type: textarea
-    id: media_url
+    id: media_urls
     attributes:
       label: Media URLs
       description: Provide one or more media links, one per line (video, animation, GIF, presentation). The first link is highlighted on the gallery card; additional links appear in the detailed view.

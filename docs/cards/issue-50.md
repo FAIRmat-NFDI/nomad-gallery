@@ -12,7 +12,8 @@ coauthors:
   - "Hampus Näsström"
   - "Jose Pizarro Blanco"
 image_path: "assets/images/cards/battery-database.png"
-publication_reference: "https://www.nature.com/articles/s41597-020-00602-2"
+publication_references:
+  - "https://www.nature.com/articles/s41597-020-00602-2"
 keywords:
   - "Battery database"
   - "ChemDataExtractor"
@@ -22,7 +23,9 @@ keywords:
 entry_name: "Battery Database: Literature-mined Battery Properties with Searchable Visualization"
 nomad_resource_links:
   - "https://nomad-lab.eu/prod/v1/oasis/gui/search/batterydb"
-repo_link: "https://github.com/FAIRmat-NFDI/nomad-battery-database"
-funding_reference: "Deutsche Forschungsgemeinschaft (DFG) - Project 460197019"
+repository_references:
+  - "https://github.com/FAIRmat-NFDI/nomad-battery-database"
+funding_references:
+  - "Deutsche Forschungsgemeinschaft (DFG) - Project 460197019"
 data_size: "700 MB"
 ---

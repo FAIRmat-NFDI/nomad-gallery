@@ -63,30 +63,22 @@ def _normalize_use_case_info(data, body=""):
             .replace("/blob/", "/")
         )
 
-    repo_link = (
-        data.get("repo_link") or data.get("repository_reference") or ""
-    ).strip()
     entry_link = (
         data.get("entry_link") or data.get("external_url") or ""
     ).strip()
 
     publication_references = (
         _to_line_list(data.get("publication_references"))
-        or _to_line_list(data.get("publication_reference"))
     )
     repository_references = (
         _to_line_list(data.get("repository_references"))
-        or _to_line_list(data.get("repository_reference"))
-        or _to_line_list(data.get("repo_link"))
     )
     nomad_resource_links = _to_line_list(data.get("nomad_resource_links"))
     funding_references = (
         _to_line_list(data.get("funding_references"))
-        or _to_line_list(data.get("funding_reference"))
     )
     media_urls = (
         _to_line_list(data.get("media_urls"))
-        or _to_line_list(data.get("media_url"))
     )
 
     return {
@@ -111,19 +103,24 @@ def _normalize_use_case_info(data, body=""):
         "data_size": (data.get("data_size", "") or "").strip(),
         "active_users": data.get("estimated_active_users", None),
         "downloads": data.get("downloads", None),
-        "media_url": media_urls[0] if media_urls else "",
+        "primary_media": media_urls[0] if media_urls else "",
+        "media_urls": media_urls,
         "coauthors": coauthors,
         "keywords": keywords,
-        "publication": publication_references[0] if publication_references else "",
+        "primary_publication": (
+            publication_references[0] if publication_references else ""
+        ),
         "publication_references": publication_references,
-        "funding": funding_references[0] if funding_references else "",
+        "primary_funding": funding_references[0] if funding_references else "",
         "funding_references": funding_references,
         "nomad_resource_links": nomad_resource_links,
         "image_name": data.get("image_name", data.get("title", "Image")),
         "image_path": image_path,
-        "repo_link": repository_references[0] if repository_references else repo_link,
+        "primary_repository": (
+            repository_references[0] if repository_references else ""
+        ),
         "repository_references": repository_references,
-        "repo_name": (data.get("repo_name", "") or "").strip() or repo_link,
+        "repo_name": (data.get("repo_name", "") or "").strip(),
         "entry_link": (
             entry_link
             or (nomad_resource_links[0] if nomad_resource_links else "")
@@ -270,9 +267,9 @@ def render_sorted_cards(cards_dir="docs/cards"):
 def _build_action_buttons(
     info,
     primary_nomad_resource_link,
-    publication,
-    repo_link,
-    media_url,
+    primary_publication,
+    primary_repository,
+    primary_media,
 ):
     """Build icon-button anchor tags for a grid use-case card."""
     cls = "grid-use-case-card__icon-button"
@@ -283,21 +280,21 @@ def _build_action_buttons(
             f' target="_blank" rel="noopener"'
             f' title="Open in NOMAD">{_icon_nomad()}</a>'
         )
-    if info["publication"]:
+    if info["primary_publication"]:
         buttons.append(
-            f'<a class="{cls}" href="{publication}"'
+            f'<a class="{cls}" href="{primary_publication}"'
             f' target="_blank" rel="noopener"'
             f' title="View Publication">{_icon_document()}</a>'
         )
-    if info["repo_link"]:
+    if info["primary_repository"]:
         buttons.append(
-            f'<a class="{cls}" href="{repo_link}"'
+            f'<a class="{cls}" href="{primary_repository}"'
             f' target="_blank" rel="noopener"'
             f' title="View Repository">{_icon_github()}</a>'
         )
-    if info["media_url"]:
+    if info["primary_media"]:
         buttons.append(
-            f'<a class="{cls}" href="{media_url}"'
+            f'<a class="{cls}" href="{primary_media}"'
             f' target="_blank" rel="noopener"'
             f' title="Watch Media">{_icon_play()}</a>'
         )
@@ -359,80 +356,66 @@ def _build_left_column(info, data_size, technique, stats_html, coauthors_html):
 
 def _build_right_column(info, escaped):
     """Build the right column detail blocks for a grid use-case card."""
-    publication = escaped["publication"]
-    repo_link = escaped["repo_link"]
-    funding = escaped["funding"]
-    media_url = escaped["media_url"]
     publication_references = escaped["publication_references"]
     repository_references = escaped["repository_references"]
     nomad_resource_links = escaped["nomad_resource_links"]
     funding_references = escaped["funding_references"]
     media_urls = escaped["media_urls"]
     col = []
-    if info["publication"]:
-        publication_extra = "".join(
+
+    def _link_reference_block(title, references):
+        items = "".join(
             f'<li><a href="{ref}" target="_blank" rel="noopener">{ref}</a></li>'
-            for ref in publication_references[1:]
+            for ref in references
         )
-        col.append(f'''
+        body = f"<ul>{items}</ul>"
+        return f'''
             <div class="grid-use-case-card__detail">
-              <h4>Publication Reference</h4>
-              <a href="{publication}" target="_blank"
-                 rel="noopener">{publication}</a>
-              {"<ul>" + publication_extra + "</ul>" if publication_extra else ""}
+              <h4>{title}</h4>
+              {body}
             </div>
-            ''')
-    if info["repo_link"]:
-        repository_extra = "".join(
-            f'<li><a href="{ref}" target="_blank" rel="noopener">{ref}</a></li>'
-            for ref in repository_references[1:]
+            '''
+
+    def _text_reference_block(title, references):
+        items = "".join(f"<li>{ref}</li>" for ref in references)
+        body = f"<ul>{items}</ul>"
+        return f'''
+            <div class="grid-use-case-card__detail">
+              <h4>{title}</h4>
+              {body}
+            </div>
+            '''
+
+    if info["primary_publication"]:
+        col.append(
+            _link_reference_block(
+                "Publication References",
+                publication_references,
+            )
         )
-        col.append(f'''
-            <div class="grid-use-case-card__detail">
-              <h4>Repository Reference</h4>
-              <a href="{repo_link}" target="_blank"
-                 rel="noopener">{repo_link}</a>
-              {"<ul>" + repository_extra + "</ul>" if repository_extra else ""}
-            </div>
-            ''')
+    if info["primary_repository"]:
+        col.append(
+            _link_reference_block(
+                "Repository References",
+                repository_references,
+            )
+        )
     if info["nomad_resource_links"]:
-        dataset_extra = "".join(
-            f'<li><a href="{ref}" target="_blank" rel="noopener">{ref}</a></li>'
-            for ref in nomad_resource_links[1:]
+        col.append(
+            _link_reference_block(
+                "NOMAD Resource Links",
+                nomad_resource_links,
+            )
         )
-        col.append(f'''
-            <div class="grid-use-case-card__detail">
-              <h4>NOMAD Resource Links</h4>
-              <a href="{nomad_resource_links[0]}" target="_blank"
-                 rel="noopener">{nomad_resource_links[0]}</a>
-              {"<ul>" + dataset_extra + "</ul>" if dataset_extra else ""}
-            </div>
-            ''')
-    if info["funding"]:
-        funding_extra = "".join(
-            f"<li>{ref}</li>"
-            for ref in funding_references[1:]
+    if info["primary_funding"]:
+        col.append(
+            _text_reference_block(
+                "Funding References",
+                funding_references,
+            )
         )
-        col.append(f'''
-            <div class="grid-use-case-card__detail">
-              <h4>Funding Reference</h4>
-              <p>{funding}</p>
-              {"<ul>" + funding_extra + "</ul>" if funding_extra else ""}
-            </div>
-            ''')
-    if info["media_url"]:
-        media_extra = "".join(
-            f'<li><a href="{ref}" target="_blank" rel="noopener">{ref}</a></li>'
-            for ref in media_urls[1:]
-        )
-        col.append(f'''
-            <div class="grid-use-case-card__detail">
-              <h4>Media URL</h4>
-              <a href="{media_url}" target="_blank"
-                 rel="noopener">{media_url}</a>
-              {"<ul>" + media_extra + "</ul>" if media_extra else ""}
-            </div>
-            ''')
+    if info["primary_media"]:
+        col.append(_link_reference_block("Media URLs", media_urls))
     return col
 
 
@@ -452,15 +435,14 @@ def _render_grid_use_case_card(file_path, index=0):
         submission_date = esc(info["submission_date"])
         technique = esc(info["technique"])
         data_size = esc(info["data_size"])
-        funding = esc(info["funding"])
-        publication = esc(info["publication"])
-        repo_link = esc(info["repo_link"])
+        primary_publication = esc(info["primary_publication"])
+        primary_repository = esc(info["primary_repository"])
         primary_nomad_resource_link = (
             esc(info["nomad_resource_links"][0])
             if info["nomad_resource_links"]
             else ""
         )
-        media_url = esc(info["media_url"])
+        primary_media = esc(info["primary_media"])
         image_path = esc(info["image_path"])
         image_name = esc(info["image_name"])
 
@@ -477,7 +459,11 @@ def _render_grid_use_case_card(file_path, index=0):
             '''
 
         action_buttons = _build_action_buttons(
-            info, primary_nomad_resource_link, publication, repo_link, media_url
+            info,
+            primary_nomad_resource_link,
+            primary_publication,
+            primary_repository,
+            primary_media,
         )
 
         keyword_items = []
@@ -508,22 +494,18 @@ def _render_grid_use_case_card(file_path, index=0):
             info, data_size, technique, stats_html, coauthors_html
         )
         escaped_vals = {
-            "publication": publication,
             "publication_references": [
                 esc(v) for v in info.get("publication_references", [])
             ],
-            "repo_link": repo_link,
             "repository_references": [
                 esc(v) for v in info.get("repository_references", [])
             ],
             "nomad_resource_links": [
                 esc(v) for v in info.get("nomad_resource_links", [])
             ],
-            "funding": funding,
             "funding_references": [
                 esc(v) for v in info.get("funding_references", [])
             ],
-            "media_url": media_url,
             "media_urls": [esc(v) for v in info.get("media_urls", [])],
         }
         right_column = _build_right_column(info, escaped_vals)

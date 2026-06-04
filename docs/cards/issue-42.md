@@ -17,7 +17,8 @@ coauthors:
   - "Claudia Draxl"
   - "Annette Trunschke"
 image_path: "assets/images/cards/catalysis_app.jpg"
-publication_reference: "https://doi.org/10.1038/s41929-026-01508-9"
+publication_references:
+  - "https://doi.org/10.1038/s41929-026-01508-9"
 keywords:
   - "Catalysis research"
   - "Machine-readable data"
@@ -25,7 +26,9 @@ keywords:
 entry_name: "NOMAD Catalysis App"
 nomad_resource_links:
   - "https://nomad-lab.eu/prod/v1/gui/search/heterogeneouscatalyst"
-repo_link: "https://github.com/FAIRmat-NFDI/nomad-catalysis-plugin"
-funding_reference: "Deutsche Forschungsgemeinschaft (DFG) - Project 460197019"
+repository_references:
+  - "https://github.com/FAIRmat-NFDI/nomad-catalysis-plugin"
+funding_references:
+  - "Deutsche Forschungsgemeinschaft (DFG) - Project 460197019"
 data_size: "2000 entries <"
 ---

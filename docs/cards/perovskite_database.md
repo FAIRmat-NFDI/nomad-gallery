@@ -12,7 +12,8 @@ description: A search interface for exploring the perovskite solar cell database
 submission_date: 2025-02-19
 image_name: Perovskite Solar Cell Database
 image_path: https://raw.githubusercontent.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database/main/docs/assets/search_perovskite_solar_cells.gif
-repo_link: https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database
+repository_references:
+  - https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database
 nomad_resource_links:
   - https://nomad-lab.eu/prod/v1/staging/gui/search/perovskite-solar-cells-database
 keywords:
@@ -20,8 +21,10 @@ keywords:
   - Solar cells
   - Energy materials
   - Materials database
-publication_reference: https://fairmat-nfdi.github.io/nomad-perovskite-solar-cells-database
-funding_reference:  Deutsche Forschungsgemeinschaft (DFG) - Project 460197019
+publication_references:
+  - https://fairmat-nfdi.github.io/nomad-perovskite-solar-cells-database
+funding_references:
+  - Deutsche Forschungsgemeinschaft (DFG) - Project 460197019
 data_size: 1.5 TB
 estimated_active_users: 3000
 ---

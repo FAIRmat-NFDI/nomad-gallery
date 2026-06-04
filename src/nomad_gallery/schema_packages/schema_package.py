@@ -98,16 +98,25 @@ class GalleryEntry(Schema):
         a_eln=ELNAnnotation(component=ELNComponentEnum.StringEditQuantity),
     )
 
-    # 6. Publications & Funding
-    publication_reference = Quantity(
+    # 6. Publications, Repositories & Funding
+    publication_references = Quantity(
         type=str,
-        description='DOI or link to the related publication.',
+        shape=['*'],
+        description='DOIs or links to related publications.',
         a_eln=ELNAnnotation(component=ELNComponentEnum.StringEditQuantity),
     )
 
-    funding_reference = Quantity(
+    repository_references = Quantity(
         type=str,
-        description='Grant number or funding agency reference.',
+        shape=['*'],
+        description='Links to related source repositories.',
+        a_eln=ELNAnnotation(component=ELNComponentEnum.StringEditQuantity),
+    )
+
+    funding_references = Quantity(
+        type=str,
+        shape=['*'],
+        description='Grant numbers or funding agency references.',
         a_eln=ELNAnnotation(component=ELNComponentEnum.StringEditQuantity),
     )
 
@@ -125,9 +134,10 @@ class GalleryEntry(Schema):
     )
 
     # 8. Media
-    media_url = Quantity(
+    media_urls = Quantity(
         type=str,
-        description='Link to a short video or GIF showcasing the tool.',
+        shape=['*'],
+        description='Links to short videos, GIFs, or other media showcasing the tool.',
         a_eln=ELNAnnotation(component=ELNComponentEnum.StringEditQuantity),
     )
 

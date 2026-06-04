@@ -37,12 +37,8 @@ keywords:
   - "Materials database"
   - "Large Language Models"
   - "Data Extraction"
-publication_reference: "https://doi.org/10.48550/arXiv.2601.17807"
-repository_reference: "https://github.com/FAIRmat-NFDI/perla"
 nomad_resource_links:
   - "https://nomad-lab.eu/prod/v1/staging/gui/search/perovskite-solar-cells-database"
-funding_reference: "Deutsche Forschungsgemeinschaft (DFG) - Project 460197019"
-media_url: "https://fairmat-nfdi.github.io/perla/"
 publication_references:
   - "https://doi.org/10.48550/arXiv.2601.17807"
 repository_references:
