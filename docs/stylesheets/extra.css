@@ -847,13 +847,19 @@
 }
 
 .grid-use-case-card__detail p,
-.grid-use-case-card__detail a {
+.grid-use-case-card__detail a,
+.grid-use-case-card__detail li {
   margin: 0;
   font-family: "Titillium Web", sans-serif;
   font-size: 13px;
   line-height: 1.55;
   color: rgba(0, 0, 0, 0.70);
   overflow-wrap: anywhere;
+}
+
+.grid-use-case-card__detail ul {
+  margin: 0;
+  padding-left: 18px;
 }
 
 .grid-use-case-card__detail a {

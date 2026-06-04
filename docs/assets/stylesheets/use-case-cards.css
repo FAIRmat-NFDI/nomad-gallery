@@ -287,12 +287,18 @@
 }
 
 .use-case-card__detail p,
-.use-case-card__detail a {
+.use-case-card__detail a,
+.use-case-card__detail li {
   margin: 0;
   font-size: 13px;
   line-height: 1.5;
   color: rgba(0,0,0,0.7);
   overflow-wrap: anywhere;
+}
+
+.use-case-card__detail ul {
+  margin: 0;
+  padding-left: 18px;
 }
 
 .use-case-card__detail a {
