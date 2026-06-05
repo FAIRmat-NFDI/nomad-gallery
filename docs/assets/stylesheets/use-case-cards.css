@@ -181,6 +181,37 @@
   color: var(--text-soft);
 }
 
+.use-case-card__description p,
+.use-case-card__description ul,
+.use-case-card__description ol {
+  margin: 0 0 8px;
+}
+
+.use-case-card__description p:last-child,
+.use-case-card__description ul:last-child,
+.use-case-card__description ol:last-child {
+  margin-bottom: 0;
+}
+
+.use-case-card__description ul,
+.use-case-card__description ol {
+  padding-left: 20px;
+}
+
+.use-case-card__description li {
+  margin: 0;
+}
+
+.use-case-card__description a {
+  color: var(--nomad-blue);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.use-case-card__description a:hover {
+  text-decoration: underline;
+}
+
 .use-case-card__description.is-collapsed {
   display: -webkit-box;
   -webkit-line-clamp: 3;

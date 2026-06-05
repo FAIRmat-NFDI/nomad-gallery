@@ -667,6 +667,37 @@
   color: rgba(0, 0, 0, 0.75);
 }
 
+.grid-use-case-card__description p,
+.grid-use-case-card__description ul,
+.grid-use-case-card__description ol {
+  margin: 0 0 8px;
+}
+
+.grid-use-case-card__description p:last-child,
+.grid-use-case-card__description ul:last-child,
+.grid-use-case-card__description ol:last-child {
+  margin-bottom: 0;
+}
+
+.grid-use-case-card__description ul,
+.grid-use-case-card__description ol {
+  padding-left: 20px;
+}
+
+.grid-use-case-card__description li {
+  margin: 0;
+}
+
+.grid-use-case-card__description a {
+  color: #2a4cdf;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.grid-use-case-card__description a:hover {
+  text-decoration: underline;
+}
+
 .grid-use-case-card__description.is-collapsed {
   display: -webkit-box;
   -webkit-line-clamp: 3;

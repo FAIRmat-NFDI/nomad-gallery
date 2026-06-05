@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 from pathlib import Path
 
+import markdown
 import yaml
 
 MIN_FRONT_MATTER_PARTS = 3
@@ -11,6 +12,16 @@ MIN_FRONT_MATTER_PARTS = 3
 def esc(x):
     """HTML-escape any value safely."""
     return html.escape("" if x is None else str(x), quote=True)
+
+
+def render_description_markdown(value):
+    """Render basic Markdown in descriptions without allowing raw HTML."""
+    escaped = esc(value)
+    return markdown.markdown(
+        escaped,
+        extensions=["sane_lists"],
+        output_format="html5",
+    )
 
 CARD_GRADIENTS = [
     "linear-gradient(135deg, #a8c8f0 0%, #7baad8 50%, #5a92c6 100%)",
@@ -439,7 +450,7 @@ def _render_grid_use_case_card(file_path, index=0):
         info = _normalize_use_case_info(data, body)
 
         title = esc(info["title"])
-        description = esc(info["description"])
+        description = render_description_markdown(info["description"])
         institution = esc(info["institution"])
         country = esc(info["country"])
         research_field = esc(info["research_field"])
@@ -554,7 +565,7 @@ def _render_grid_use_case_card(file_path, index=0):
             grid-use-case-card__pill--method">{methodology}</span>
     </div>
 
-    <p class="grid-use-case-card__description is-collapsed">{description}</p>
+    <div class="grid-use-case-card__description is-collapsed">{description}</div>
 
     <div class="grid-use-case-card__keywords">
       {"".join(keyword_items)}
