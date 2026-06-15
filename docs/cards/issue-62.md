@@ -1,5 +1,5 @@
 ---
-title: "PERLA - The PERovskite photovoltaics Living Archive on NOMAD"
+title: "PERLA – The PERovskite Photovoltaics Living Archive on NOMAD"
 submitter: "Ahmed Mansour"
 institution: "Humboldt-Universität zu Berlin, Friedrich Schiller University Jena"
 country: "DE"
@@ -35,8 +35,8 @@ keywords:
   - "Solar cells"
   - "Energy materials"
   - "Materials database"
-  - "Large Language Models"
-  - "Data Extraction"
+  - "Large language models"
+  - "Data extraction"
 nomad_resource_links:
   - "https://nomad-lab.eu/prod/v1/staging/gui/search/perovskite-solar-cells-database"
 publication_references:
