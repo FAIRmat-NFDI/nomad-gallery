@@ -1,5 +1,5 @@
 ---
-title: "NOMAD CAMELS Plugin - Parser and Search App"
+title: "NOMAD CAMELS Plugin – Parser and Search App"
 submitter: "Alexander Fuchs"
 institution: "Humboldt-Universität zu Berlin"
 country: "DE"
@@ -25,4 +25,6 @@ repository_references:
   - "https://github.com/FAU-LAP/NOMAD-CAMELS"
 funding_references:
   - "Deutsche Forschungsgemeinschaft (DFG) - Project 460197019"
+media_urls:
+  - "https://youtube.com/playlist?list=PLrRaxjvn6FDWR-8SWOfy0j7ux5u3TF_VJ&si=nZZq3C2FhBqdL7Vg"
 ---
