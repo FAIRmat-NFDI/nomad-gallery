@@ -533,6 +533,7 @@
 }
 
 .grid-use-case-card.is-expanded .grid-use-case-card__hero-image img {
+  max-height: 520px;
   object-fit: contain;
   background: #fff;
 }
