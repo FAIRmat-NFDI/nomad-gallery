@@ -56,7 +56,7 @@ title: NOMAD Gallery | Home
       {{ render_featured_rotator_card("special_cards/issue-42.md", index=1) }}
     </div>
     <div class="featured-rotator__slide-source">
-      {{ render_featured_rotator_card("special_cards/issue-75.md", index=2) }}
+      {{ render_featured_rotator_card("special_cards/issue-85.md", index=2) }}
     </div>
   </template>
 </div>
